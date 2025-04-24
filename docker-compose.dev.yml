@@ -1,0 +1,20 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    environment:
+      - ACCEPT_EULA=${ACCEPT_EULA}
+      - SA_PASSWORD=${SA_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - db-data:/var/opt/mssql
+  api-gateway:
+  auth-service:
+    depends_on:
+      - db
+  notification-service:
+    depends_on:
+      - db
+volumes:
+  db-data:

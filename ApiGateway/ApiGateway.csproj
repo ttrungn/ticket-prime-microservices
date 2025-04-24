@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ContainerRepository>api-gateway</ContainerRepository>
+  </PropertyGroup>
+  <ItemGroup>
+    <ContainerPort Include="9000" Type="tcp"/>
+    <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.4"/>
+    <None Include="Keys\public.key">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
