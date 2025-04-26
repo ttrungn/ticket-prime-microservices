@@ -27,4 +27,9 @@ public abstract class BaseEntity<TId>
     {
         _domainEvents.Clear();
     }
+
+    public string NotEmpty(string value, string paramName)
+    {
+        return string.IsNullOrWhiteSpace(value) ? throw new Exception($"{paramName} cannot be empty.") : value;
+    }
 }

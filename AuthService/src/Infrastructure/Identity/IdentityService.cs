@@ -44,12 +44,7 @@ public class IdentityService : IIdentityService
 
     public async Task<(Result Result, string UserId)> CreateUserAsync(string email, string password, string role)
     {
-        var user = new ApplicationUser
-        {
-            UserName = email,
-            Email = email
-        };
-        user.AddDomainEvent(new UserRegisteredEvent(user.Id, email));
+        var user = new ApplicationUser(email, email);
 
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
