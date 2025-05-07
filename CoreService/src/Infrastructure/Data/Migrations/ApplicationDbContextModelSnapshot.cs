@@ -29,28 +29,41 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset")
+                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
 
                     b.Property<DateTimeOffset>("DeleteAt")
-                        .HasColumnType("datetimeoffset");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset")
+                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
 
                     b.Property<bool>("DeleteFlag")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTimeOffset>("LastModifiedAt")
-                        .HasColumnType("datetimeoffset");
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetimeoffset")
+                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("NormalizedName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.HasIndex("NormalizedName")
+                        .IsUnique();
+
+                    b.ToTable("Category", (string)null);
                 });
 
             modelBuilder.Entity("CoreService.Domain.Entities.Customer", b =>
@@ -63,8 +76,8 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("AvatarUrl")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("AvatarUrl");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -73,8 +86,8 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                     b.Property<string>("CustomerCode")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTimeOffset>("DeleteAt")
                         .ValueGeneratedOnAdd()
@@ -96,13 +109,10 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CustomerCode")
-                        .IsUnique();
 
                     b.ToTable("Customer", (string)null);
                 });
@@ -143,8 +153,8 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ImageUrl");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<DateTimeOffset>("LastModifiedAt")
                         .ValueGeneratedOnAddOrUpdate()
@@ -162,8 +172,8 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int>("TotalTickets")
                         .HasColumnType("int");
@@ -180,8 +190,6 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                     b.HasIndex("SubCategoryId");
 
-                    b.HasIndex("VenueId");
-
                     b.ToTable("Event", (string)null);
                 });
 
@@ -192,9 +200,9 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AvatarUrl")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("AvatarUrl");
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Bio")
                         .IsRequired()
@@ -223,28 +231,25 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("OrganizerCode")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Website")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("Website");
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrganizerCode")
-                        .IsUnique();
 
                     b.ToTable("Organizer", (string)null);
                 });
@@ -286,7 +291,7 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .HasColumnType("datetimeoffset")
                         .HasDefaultValueSql("SYSDATETIMEOFFSET()");
 
-                    b.Property<Guid?>("ParentId")
+                    b.Property<Guid?>("ParentReviewId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Rating")
@@ -298,7 +303,7 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.HasIndex("ParentId");
+                    b.HasIndex("ParentReviewId");
 
                     b.ToTable("Review", (string)null);
                 });
@@ -309,11 +314,6 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetimeoffset")
@@ -329,27 +329,43 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<DateTimeOffset>("LastModifiedAt")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetimeoffset")
                         .HasDefaultValueSql("SYSDATETIMEOFFSET()");
 
-                    b.Property<string>("Name")
+                    b.Property<double>("PositionX")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PositionY")
+                        .HasColumnType("float");
+
+                    b.Property<float>("Radius")
+                        .HasColumnType("real");
+
+                    b.Property<Guid>("SeatGuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SeatNumber")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<Guid>("SeatSectionRowId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SeatStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TicketTypeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SeatSectionRowId");
+
+                    b.HasIndex("TicketTypeId");
 
                     b.ToTable("Seat", (string)null);
                 });
@@ -360,11 +376,6 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetimeoffset")
@@ -380,11 +391,6 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<DateTimeOffset>("LastModifiedAt")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetimeoffset")
@@ -392,8 +398,14 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<double>("PositionX")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PositionY")
+                        .HasColumnType("float");
 
                     b.Property<Guid>("VenueId")
                         .HasColumnType("uniqueidentifier");
@@ -411,11 +423,6 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetimeoffset")
@@ -431,20 +438,26 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<DateTimeOffset>("LastModifiedAt")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetimeoffset")
                         .HasDefaultValueSql("SYSDATETIMEOFFSET()");
 
-                    b.Property<string>("Name")
+                    b.Property<double>("PositionX")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PositionY")
+                        .HasColumnType("float");
+
+                    b.Property<string>("RowNumber")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("RowNumberPosition")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<Guid>("SeatSectionId")
                         .HasColumnType("uniqueidentifier");
@@ -462,34 +475,44 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CategoryId")
+                    b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset")
+                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
 
                     b.Property<DateTimeOffset>("DeleteAt")
-                        .HasColumnType("datetimeoffset");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset")
+                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
 
                     b.Property<bool>("DeleteFlag")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTimeOffset>("LastModifiedAt")
-                        .HasColumnType("datetimeoffset");
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetimeoffset")
+                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("NormalizedName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("SubCategories");
+                    b.ToTable("SubCategory", (string)null);
                 });
 
             modelBuilder.Entity("CoreService.Domain.Entities.Ticket", b =>
@@ -528,8 +551,9 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .HasDefaultValueSql("SYSDATETIMEOFFSET()");
 
                     b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -546,7 +570,7 @@ namespace CoreService.Infrastructure.Data.Migrations
                     b.Property<int>("TicketStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("TypeId")
+                    b.Property<Guid>("TicketTypeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -555,9 +579,10 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.HasIndex("SeatId");
+                    b.HasIndex("SeatId")
+                        .IsUnique();
 
-                    b.HasIndex("TypeId");
+                    b.HasIndex("TicketTypeId");
 
                     b.ToTable("Ticket", (string)null);
                 });
@@ -567,6 +592,11 @@ namespace CoreService.Infrastructure.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -583,11 +613,6 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<DateTimeOffset>("LastModifiedAt")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetimeoffset")
@@ -595,15 +620,15 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<Guid>("OrganizerId")
+                    b.Property<Guid>("VenueId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrganizerId");
+                    b.HasIndex("VenueId");
 
                     b.ToTable("TicketType", (string)null);
                 });
@@ -636,20 +661,15 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<Guid>("OrganizerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TypeId")
+                    b.Property<Guid>("TicketTypeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrganizerId");
-
-                    b.HasIndex("TypeId");
+                    b.HasIndex("TicketTypeId");
 
                     b.ToTable("TypeService", (string)null);
                 });
@@ -660,13 +680,9 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Capacity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<string>("BackgroundImageUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -683,33 +699,29 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ImageUrl");
+                    b.Property<int>("Height")
+                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("LastModifiedAt")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetimeoffset")
                         .HasDefaultValueSql("SYSDATETIMEOFFSET()");
 
-                    b.Property<decimal>("Latitude")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Longtitude")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("Width")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EventId")
+                        .IsUnique();
 
                     b.ToTable("Venue", (string)null);
                 });
@@ -723,27 +735,22 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                             b1.Property<string>("City")
                                 .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)")
-                                .HasColumnName("City");
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
 
                             b1.Property<string>("Country")
                                 .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)")
-                                .HasColumnName("Country");
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
 
                             b1.Property<string>("Street")
                                 .IsRequired()
-                                .HasMaxLength(200)
-                                .HasColumnType("nvarchar(200)")
-                                .HasColumnName("Street");
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
 
                             b1.Property<string>("ZipCode")
                                 .IsRequired()
-                                .HasMaxLength(20)
-                                .HasColumnType("nvarchar(20)")
-                                .HasColumnName("ZipCode");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.HasKey("CustomerId");
 
@@ -760,9 +767,8 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                             b1.Property<string>("Value")
                                 .IsRequired()
-                                .HasMaxLength(15)
-                                .HasColumnType("nvarchar(15)")
-                                .HasColumnName("PhoneNumber");
+                                .HasMaxLength(20)
+                                .HasColumnType("nvarchar(20)");
 
                             b1.HasKey("CustomerId");
 
@@ -779,15 +785,13 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                             b1.Property<string>("First")
                                 .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)")
-                                .HasColumnName("FirstName");
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
 
                             b1.Property<string>("Last")
                                 .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)")
-                                .HasColumnName("LastName");
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
 
                             b1.HasKey("CustomerId");
 
@@ -812,7 +816,7 @@ namespace CoreService.Infrastructure.Data.Migrations
                     b.HasOne("CoreService.Domain.Entities.Organizer", "Organizer")
                         .WithMany("Events")
                         .HasForeignKey("OrganizerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CoreService.Domain.Entities.SubCategory", "SubCategory")
@@ -821,17 +825,44 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CoreService.Domain.Entities.Venue", "Venue")
-                        .WithMany("Events")
-                        .HasForeignKey("VenueId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.OwnsOne("CoreService.Domain.ValueObjects.Address", "Address", b1 =>
+                        {
+                            b1.Property<Guid>("EventId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
+
+                            b1.Property<string>("Country")
+                                .IsRequired()
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
+
+                            b1.Property<string>("ZipCode")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("EventId");
+
+                            b1.ToTable("Event");
+
+                            b1.WithOwner()
+                                .HasForeignKey("EventId");
+                        });
+
+                    b.Navigation("Address")
                         .IsRequired();
 
                     b.Navigation("Organizer");
 
                     b.Navigation("SubCategory");
-
-                    b.Navigation("Venue");
                 });
 
             modelBuilder.Entity("CoreService.Domain.Entities.Organizer", b =>
@@ -843,9 +874,8 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                             b1.Property<string>("Value")
                                 .IsRequired()
-                                .HasMaxLength(15)
-                                .HasColumnType("nvarchar(15)")
-                                .HasColumnName("PhoneNumber");
+                                .HasMaxLength(20)
+                                .HasColumnType("nvarchar(20)");
 
                             b1.HasKey("OrganizerId");
 
@@ -862,9 +892,8 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                             b1.Property<string>("Value")
                                 .IsRequired()
-                                .HasMaxLength(254)
-                                .HasColumnType("nvarchar(254)")
-                                .HasColumnName("ContactEmail");
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
 
                             b1.HasKey("OrganizerId");
 
@@ -895,13 +924,15 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CoreService.Domain.Entities.Review", null)
+                    b.HasOne("CoreService.Domain.Entities.Review", "ParentReview")
                         .WithMany("Replies")
-                        .HasForeignKey("ParentId");
+                        .HasForeignKey("ParentReviewId");
 
                     b.Navigation("Customer");
 
                     b.Navigation("Event");
+
+                    b.Navigation("ParentReview");
                 });
 
             modelBuilder.Entity("CoreService.Domain.Entities.Seat", b =>
@@ -912,7 +943,15 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CoreService.Domain.Entities.TicketType", "TicketType")
+                        .WithMany("Seats")
+                        .HasForeignKey("TicketTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("SeatSectionRow");
+
+                    b.Navigation("TicketType");
                 });
 
             modelBuilder.Entity("CoreService.Domain.Entities.SeatSection", b =>
@@ -939,34 +978,37 @@ namespace CoreService.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("CoreService.Domain.Entities.SubCategory", b =>
                 {
-                    b.HasOne("CoreService.Domain.Entities.Category", null)
+                    b.HasOne("CoreService.Domain.Entities.Category", "Category")
                         .WithMany("SubCategories")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("CoreService.Domain.Entities.Ticket", b =>
                 {
                     b.HasOne("CoreService.Domain.Entities.Customer", "Customer")
                         .WithMany("Tickets")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("CustomerId");
 
                     b.HasOne("CoreService.Domain.Entities.Event", "Event")
                         .WithMany("Tickets")
                         .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("CoreService.Domain.Entities.Seat", "Seat")
-                        .WithMany()
-                        .HasForeignKey("SeatId")
+                        .WithOne()
+                        .HasForeignKey("CoreService.Domain.Entities.Ticket", "SeatId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CoreService.Domain.Entities.TicketType", "TicketType")
                         .WithMany("Tickets")
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("TicketTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -980,75 +1022,35 @@ namespace CoreService.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("CoreService.Domain.Entities.TicketType", b =>
                 {
-                    b.HasOne("CoreService.Domain.Entities.Organizer", "Organizer")
+                    b.HasOne("CoreService.Domain.Entities.Venue", "Venue")
                         .WithMany("TicketTypes")
-                        .HasForeignKey("OrganizerId")
+                        .HasForeignKey("VenueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Organizer");
+                    b.Navigation("Venue");
                 });
 
             modelBuilder.Entity("CoreService.Domain.Entities.TypeService", b =>
                 {
-                    b.HasOne("CoreService.Domain.Entities.Organizer", "Organizer")
-                        .WithMany("TypeServices")
-                        .HasForeignKey("OrganizerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("CoreService.Domain.Entities.TicketType", "TicketType")
                         .WithMany("TypeServices")
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("TicketTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Organizer");
 
                     b.Navigation("TicketType");
                 });
 
             modelBuilder.Entity("CoreService.Domain.Entities.Venue", b =>
                 {
-                    b.OwnsOne("CoreService.Domain.ValueObjects.Address", "Address", b1 =>
-                        {
-                            b1.Property<Guid>("VenueId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("City")
-                                .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)")
-                                .HasColumnName("City");
-
-                            b1.Property<string>("Country")
-                                .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)")
-                                .HasColumnName("Country");
-
-                            b1.Property<string>("Street")
-                                .IsRequired()
-                                .HasMaxLength(200)
-                                .HasColumnType("nvarchar(200)")
-                                .HasColumnName("Street");
-
-                            b1.Property<string>("ZipCode")
-                                .IsRequired()
-                                .HasMaxLength(20)
-                                .HasColumnType("nvarchar(20)")
-                                .HasColumnName("ZipCode");
-
-                            b1.HasKey("VenueId");
-
-                            b1.ToTable("Venue");
-
-                            b1.WithOwner()
-                                .HasForeignKey("VenueId");
-                        });
-
-                    b.Navigation("Address")
+                    b.HasOne("CoreService.Domain.Entities.Event", "Event")
+                        .WithOne("Venue")
+                        .HasForeignKey("CoreService.Domain.Entities.Venue", "EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("CoreService.Domain.Entities.Category", b =>
@@ -1068,15 +1070,14 @@ namespace CoreService.Infrastructure.Data.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("Tickets");
+
+                    b.Navigation("Venue")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("CoreService.Domain.Entities.Organizer", b =>
                 {
                     b.Navigation("Events");
-
-                    b.Navigation("TicketTypes");
-
-                    b.Navigation("TypeServices");
                 });
 
             modelBuilder.Entity("CoreService.Domain.Entities.Review", b =>
@@ -1096,6 +1097,8 @@ namespace CoreService.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("CoreService.Domain.Entities.TicketType", b =>
                 {
+                    b.Navigation("Seats");
+
                     b.Navigation("Tickets");
 
                     b.Navigation("TypeServices");
@@ -1103,9 +1106,9 @@ namespace CoreService.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("CoreService.Domain.Entities.Venue", b =>
                 {
-                    b.Navigation("Events");
-
                     b.Navigation("SeatSections");
+
+                    b.Navigation("TicketTypes");
                 });
 #pragma warning restore 612, 618
         }

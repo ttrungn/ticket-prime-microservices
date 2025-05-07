@@ -6,26 +6,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CoreService.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class FinishedDatabaseSchema : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Categories",
+                name: "Category",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NormalizedName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    NormalizedName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.PrimaryKey("PK_Category", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -33,18 +33,18 @@ namespace CoreService.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
-                    CustomerCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    AvatarUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    CustomerCode = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    AvatarUrl = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Name_First = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Name_Last = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    PhoneNumber_Value = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Gender = table.Column<int>(type: "int", nullable: false),
                     Age = table.Column<int>(type: "int", nullable: false),
-                    Street = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Country = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ZipCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Address_Street = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Address_City = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Address_Country = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Address_ZipCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
                     DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
@@ -60,13 +60,13 @@ namespace CoreService.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
-                    OrganizerCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ContactEmail = table.Column<string>(type: "nvarchar(254)", maxLength: 254, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
-                    AvatarUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Website = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    OrganizerCode = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    ContactEmail_Value = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    PhoneNumber_Value = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    AvatarUrl = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    Website = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     Bio = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
@@ -79,21 +79,13 @@ namespace CoreService.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Venue",
+                name: "SubCategory",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Capacity = table.Column<int>(type: "int", nullable: false),
-                    Street = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Country = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ZipCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Longtitude = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Latitude = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    NormalizedName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
                     DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
@@ -101,77 +93,11 @@ namespace CoreService.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Venue", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SubCategories",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NormalizedName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SubCategories", x => x.Id);
+                    table.PrimaryKey("PK_SubCategory", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SubCategories_Categories_CategoryId",
+                        name: "FK_SubCategory_Category_CategoryId",
                         column: x => x.CategoryId,
-                        principalTable: "Categories",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TicketType",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TicketType", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TicketType_Organizer_OrganizerId",
-                        column: x => x.OrganizerId,
-                        principalTable: "Organizer",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SeatSection",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    VenueId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SeatSection", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SeatSection_Venue_VenueId",
-                        column: x => x.VenueId,
-                        principalTable: "Venue",
+                        principalTable: "Category",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -184,10 +110,14 @@ namespace CoreService.Infrastructure.Data.Migrations
                     OrganizerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     VenueId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SubCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    Address_Street = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Address_City = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Address_Country = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Address_ZipCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TotalTickets = table.Column<int>(type: "int", nullable: false),
                     TotalTicketsAvailable = table.Column<int>(type: "int", nullable: false),
                     StartTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
@@ -205,72 +135,11 @@ namespace CoreService.Infrastructure.Data.Migrations
                         column: x => x.OrganizerId,
                         principalTable: "Organizer",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Event_SubCategories_SubCategoryId",
+                        name: "FK_Event_SubCategory_SubCategoryId",
                         column: x => x.SubCategoryId,
-                        principalTable: "SubCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Event_Venue_VenueId",
-                        column: x => x.VenueId,
-                        principalTable: "Venue",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TypeService",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TypeService", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TypeService_Organizer_OrganizerId",
-                        column: x => x.OrganizerId,
-                        principalTable: "Organizer",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TypeService_TicketType_TypeId",
-                        column: x => x.TypeId,
-                        principalTable: "TicketType",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SeatSectionRow",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SeatSectionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SeatSectionRow", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SeatSectionRow_SeatSection_SeatSectionId",
-                        column: x => x.SeatSectionId,
-                        principalTable: "SeatSection",
+                        principalTable: "SubCategory",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -280,7 +149,7 @@ namespace CoreService.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ParentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ParentReviewId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Rating = table.Column<int>(type: "int", nullable: false),
@@ -306,10 +175,134 @@ namespace CoreService.Infrastructure.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Review_Review_ParentId",
-                        column: x => x.ParentId,
+                        name: "FK_Review_Review_ParentReviewId",
+                        column: x => x.ParentReviewId,
                         principalTable: "Review",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Venue",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    BackgroundImageUrl = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Width = table.Column<int>(type: "int", nullable: false),
+                    Height = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Venue", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Venue_Event_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Event",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SeatSection",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VenueId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    PositionX = table.Column<double>(type: "float", nullable: false),
+                    PositionY = table.Column<double>(type: "float", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SeatSection", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SeatSection_Venue_VenueId",
+                        column: x => x.VenueId,
+                        principalTable: "Venue",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TicketType",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Color = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: false),
+                    VenueId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TicketType", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TicketType_Venue_VenueId",
+                        column: x => x.VenueId,
+                        principalTable: "Venue",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SeatSectionRow",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RowNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PositionX = table.Column<double>(type: "float", nullable: false),
+                    PositionY = table.Column<double>(type: "float", nullable: false),
+                    RowNumberPosition = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    SeatSectionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SeatSectionRow", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SeatSectionRow_SeatSection_SeatSectionId",
+                        column: x => x.SeatSectionId,
+                        principalTable: "SeatSection",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TypeService",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TicketTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TypeService", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TypeService_TicketType_TicketTypeId",
+                        column: x => x.TicketTypeId,
+                        principalTable: "TicketType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -317,10 +310,14 @@ namespace CoreService.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SeatNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    SeatGuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PositionX = table.Column<double>(type: "float", nullable: false),
+                    PositionY = table.Column<double>(type: "float", nullable: false),
+                    Radius = table.Column<float>(type: "real", nullable: false),
+                    SeatStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SeatSectionRowId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    TicketTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
                     DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
@@ -335,6 +332,11 @@ namespace CoreService.Infrastructure.Data.Migrations
                         principalTable: "SeatSectionRow",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Seat_TicketType_TicketTypeId",
+                        column: x => x.TicketTypeId,
+                        principalTable: "TicketType",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -344,14 +346,14 @@ namespace CoreService.Infrastructure.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TicketTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SeatId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TicketStatus = table.Column<int>(type: "int", nullable: false),
                     ReservedUntil = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     SoldAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     IsUsed = table.Column<bool>(type: "bit", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
                     DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
@@ -364,14 +366,12 @@ namespace CoreService.Infrastructure.Data.Migrations
                         name: "FK_Ticket_Customer_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customer",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Ticket_Event_EventId",
                         column: x => x.EventId,
                         principalTable: "Event",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Ticket_Seat_SeatId",
                         column: x => x.SeatId,
@@ -379,17 +379,16 @@ namespace CoreService.Infrastructure.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Ticket_TicketType_TypeId",
-                        column: x => x.TypeId,
+                        name: "FK_Ticket_TicketType_TicketTypeId",
+                        column: x => x.TicketTypeId,
                         principalTable: "TicketType",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Customer_CustomerCode",
-                table: "Customer",
-                column: "CustomerCode",
+                name: "IX_Category_NormalizedName",
+                table: "Category",
+                column: "NormalizedName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -403,17 +402,6 @@ namespace CoreService.Infrastructure.Data.Migrations
                 column: "SubCategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Event_VenueId",
-                table: "Event",
-                column: "VenueId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Organizer_OrganizerCode",
-                table: "Organizer",
-                column: "OrganizerCode",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Review_CustomerId",
                 table: "Review",
                 column: "CustomerId");
@@ -424,14 +412,19 @@ namespace CoreService.Infrastructure.Data.Migrations
                 column: "EventId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Review_ParentId",
+                name: "IX_Review_ParentReviewId",
                 table: "Review",
-                column: "ParentId");
+                column: "ParentReviewId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Seat_SeatSectionRowId",
                 table: "Seat",
                 column: "SeatSectionRowId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Seat_TicketTypeId",
+                table: "Seat",
+                column: "TicketTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SeatSection_VenueId",
@@ -444,8 +437,8 @@ namespace CoreService.Infrastructure.Data.Migrations
                 column: "SeatSectionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SubCategories_CategoryId",
-                table: "SubCategories",
+                name: "IX_SubCategory_CategoryId",
+                table: "SubCategory",
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
@@ -461,27 +454,29 @@ namespace CoreService.Infrastructure.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Ticket_SeatId",
                 table: "Ticket",
-                column: "SeatId");
+                column: "SeatId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Ticket_TypeId",
+                name: "IX_Ticket_TicketTypeId",
                 table: "Ticket",
-                column: "TypeId");
+                column: "TicketTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TicketType_OrganizerId",
+                name: "IX_TicketType_VenueId",
                 table: "TicketType",
-                column: "OrganizerId");
+                column: "VenueId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TypeService_OrganizerId",
+                name: "IX_TypeService_TicketTypeId",
                 table: "TypeService",
-                column: "OrganizerId");
+                column: "TicketTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TypeService_TypeId",
-                table: "TypeService",
-                column: "TypeId");
+                name: "IX_Venue_EventId",
+                table: "Venue",
+                column: "EventId",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -500,31 +495,31 @@ namespace CoreService.Infrastructure.Data.Migrations
                 name: "Customer");
 
             migrationBuilder.DropTable(
-                name: "Event");
-
-            migrationBuilder.DropTable(
                 name: "Seat");
-
-            migrationBuilder.DropTable(
-                name: "TicketType");
-
-            migrationBuilder.DropTable(
-                name: "SubCategories");
 
             migrationBuilder.DropTable(
                 name: "SeatSectionRow");
 
             migrationBuilder.DropTable(
-                name: "Organizer");
-
-            migrationBuilder.DropTable(
-                name: "Categories");
+                name: "TicketType");
 
             migrationBuilder.DropTable(
                 name: "SeatSection");
 
             migrationBuilder.DropTable(
                 name: "Venue");
+
+            migrationBuilder.DropTable(
+                name: "Event");
+
+            migrationBuilder.DropTable(
+                name: "Organizer");
+
+            migrationBuilder.DropTable(
+                name: "SubCategory");
+
+            migrationBuilder.DropTable(
+                name: "Category");
         }
     }
 }

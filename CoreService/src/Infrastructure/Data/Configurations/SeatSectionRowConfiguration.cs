@@ -8,52 +8,52 @@ namespace CoreService.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<SeatSectionRow> builder)
         {
-            // Map to table
+            // Table configuration (optional, will default to table name from DbSet)
             builder.ToTable("SeatSectionRow");
 
-            // Primary key
-            builder.HasKey(r => r.Id);
+            // Primary Key
+            builder.HasKey(ssr => ssr.Id);
 
-            // Foreign key to SeatSection
-            builder.Property(r => r.SeatSectionId)
-                   .IsRequired();
-            builder.HasOne(r => r.SeatSection)
-                   .WithMany(s => s.SeatSectionRows)
-                   .HasForeignKey(r => r.SeatSectionId);
+            // Properties configuration
+            builder.Property(ssr => ssr.RowNumber)
+                .IsRequired()
+                .HasMaxLength(50); // Adjust the max length as needed
 
-            // Code, Name, Description
-            builder.Property(r => r.Code)
-                   .IsRequired()
-                   .HasMaxLength(50);
+            builder.Property(ssr => ssr.PositionX)
+                .IsRequired();
 
-            builder.Property(r => r.Name)
-                   .IsRequired()
-                   .HasMaxLength(100);
+            builder.Property(ssr => ssr.PositionY)
+                .IsRequired();
 
-            builder.Property(r => r.Description)
-                   .IsRequired()
-                   .HasMaxLength(255);
+            builder.Property(ssr => ssr.RowNumberPosition)
+                .IsRequired()
+                .HasMaxLength(50); // Adjust the max length as needed
 
-            // Relationship to Seats (back-reference)
-            builder.HasMany(r => r.Seats)
-                   .WithOne(s => s.SeatSectionRow)
-                   .HasForeignKey(s => s.SeatSectionRowId);
+            // Relationships configuration with OnDelete behavior
+            builder.HasOne(ssr => ssr.SeatSection)
+                .WithMany(ss => ss.SeatSectionRows) // Assuming SeatSection has a navigation property back to SeatSectionRow
+                .HasForeignKey(ssr => ssr.SeatSectionId);
 
-            // Auditable fields
-            builder.Property(r => r.CreatedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+            builder.HasMany(ssr => ssr.Seats)
+                .WithOne(s => s.SeatSectionRow) // Assuming Seat has a navigation property back to SeatSectionRow
+                .HasForeignKey(s => s.SeatSectionRowId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Property(r => r.LastModifiedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAddOrUpdate();
+            // Auditable fields configuration
+            builder.Property(ssr => ssr.CreatedAt)
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
-            builder.Property(r => r.DeleteAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+            builder.Property(ssr => ssr.LastModifiedAt)
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAddOrUpdate();
 
-            builder.Property(r => r.DeleteFlag)
-                   .HasDefaultValue(false);
+            builder.Property(ssr => ssr.DeleteAt)
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
+
+            builder.Property(ssr => ssr.DeleteFlag)
+                .HasDefaultValue(false);
         }
     }
 }

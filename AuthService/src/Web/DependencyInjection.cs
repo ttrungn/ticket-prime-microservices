@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace AuthService.Web;
 
 public static class DependencyInjection
 {
@@ -35,9 +35,12 @@ public static class DependencyInjection
                     builder.Configuration["KafkaSettings:UserRegisteredTopic:Name"],
                     (ctx, kc) =>
                     {
-                        kc.MessageTimeout = TimeSpan.FromMilliseconds(builder.Configuration.GetValue<int>("KafkaSettings:ProducerConfigs:MessageTimeoutMs"));
-                        kc.MessageSendMaxRetries = builder.Configuration.GetValue<int>("KafkaSettings:ProducerConfigs:MessageSendMaxRetries");
-                        kc.RetryBackoff = TimeSpan.FromMilliseconds(builder.Configuration.GetValue<int>("KafkaSettings:ProducerConfigs:RetryBackoffMs"));
+                        kc.MessageTimeout = TimeSpan.FromMilliseconds(
+                            builder.Configuration.GetValue<int>("KafkaSettings:ProducerConfigs:MessageTimeoutMs"));
+                        kc.MessageSendMaxRetries =
+                            builder.Configuration.GetValue<int>("KafkaSettings:ProducerConfigs:MessageSendMaxRetries");
+                        kc.RetryBackoff = TimeSpan.FromMilliseconds(
+                            builder.Configuration.GetValue<int>("KafkaSettings:ProducerConfigs:RetryBackoffMs"));
                     });
 
                 rider.UsingKafka((context, k) =>
@@ -46,14 +49,13 @@ public static class DependencyInjection
                         builder.Configuration["KafkaSettings:Url"],
                         h =>
                         {
-                            h.UseSasl(
-                                s =>
-                                {
-                                    s.Mechanism = SaslMechanism.Plain;
-                                    s.SecurityProtocol = SecurityProtocol.SaslSsl;
-                                    s.Username = builder.Configuration["KafkaSettings:Username"];
-                                    s.Password = builder.Configuration["KafkaSettings:Password"];
-                                });
+                            h.UseSasl(s =>
+                            {
+                                s.Mechanism = SaslMechanism.Plain;
+                                s.SecurityProtocol = SecurityProtocol.SaslSsl;
+                                s.Username = builder.Configuration["KafkaSettings:Username"];
+                                s.Password = builder.Configuration["KafkaSettings:Password"];
+                            });
                         });
                 });
             });
@@ -70,13 +72,14 @@ public static class DependencyInjection
             configure.Title = "AuthService API";
 
             // Add JWT
-            configure.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
-            {
-                Type = OpenApiSecuritySchemeType.ApiKey,
-                Name = "Authorization",
-                In = OpenApiSecurityApiKeyLocation.Header,
-                Description = "Type into the textbox: Bearer {your JWT token}."
-            });
+            configure.AddSecurity("JWT", Enumerable.Empty<string>(),
+                new OpenApiSecurityScheme
+                {
+                    Type = OpenApiSecuritySchemeType.ApiKey,
+                    Name = "Authorization",
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Description = "Type into the textbox: Bearer {your JWT token}."
+                });
 
             configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
         });

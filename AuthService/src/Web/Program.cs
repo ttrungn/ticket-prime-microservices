@@ -1,4 +1,6 @@
+using AuthService.Infrastructure;
 using AuthService.Infrastructure.Data;
+using AuthService.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,7 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 app.UseHealthChecks("/health");
 app.UseStaticFiles();
 
@@ -29,7 +32,6 @@ app.UseSwaggerUi(settings =>
     settings.DocumentPath = "/api/specification.json";
 });
 
-
 app.UseExceptionHandler(options => { });
 
 app.Map("/", () => Results.Redirect("/api"));
@@ -38,4 +40,6 @@ app.MapEndpoints();
 
 app.Run();
 
-public partial class Program { }
+public partial class Program
+{
+}

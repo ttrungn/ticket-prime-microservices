@@ -18,12 +18,16 @@ namespace CoreService.Domain.Entities
                 _customer = value;
             }
         }
+
         public Guid EventId { get; set; }
-        public Event Event { get; set; } = default!;
-        public Guid TypeId { get; set; }
-        public TicketType TicketType { get; set; } = default!;
+        public Event Event { get; set; } = null!;
+
+        public Guid TicketTypeId { get; set; }
+        public TicketType TicketType { get; set; } = null!;
+
         public Guid SeatId { get; set; }
-        public Seat Seat { get; set; } = default!;
+        public Seat Seat { get; set; } = null!;
+
         private decimal _price;
         public decimal Price
         {
@@ -38,35 +42,16 @@ namespace CoreService.Domain.Entities
                 _price = value;
             }
         }
+
         public TicketStatus TicketStatus { get; set; } = TicketStatus.Available;
+
         public DateTimeOffset? ReservedUntil { get; private set; }
+
         public DateTimeOffset? SoldAt { get; private set; }
+
         public bool IsUsed { get; set; }
-        public string Notes { get; set; } = default!;
 
-        public Ticket()
-        {
-        }
-
-        public Ticket(
-            Guid id,
-            Guid? customerId,
-            Guid eventId,
-            Guid typeId,
-            Guid seatId,
-            decimal price,
-            bool isUsed,
-            string notes)
-        {
-            Id = id;
-            CustomerId = customerId;
-            EventId = eventId;
-            TypeId = typeId;
-            SeatId = seatId;
-            Price = price;
-            IsUsed = isUsed;
-            Notes = notes;
-        }
+        public string Notes { get; set; } = null!;
 
         public void Reserve()
         {
@@ -107,4 +92,3 @@ namespace CoreService.Domain.Entities
         }
     }
 }
-

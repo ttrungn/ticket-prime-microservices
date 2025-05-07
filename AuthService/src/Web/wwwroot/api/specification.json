@@ -6,7 +6,7 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/Users/register/customer": {
+    "/api/auth/Users/register/customer": {
       "post": {
         "tags": [
           "Users"
@@ -31,7 +31,7 @@
         }
       }
     },
-    "/Users/login/customer": {
+    "/api/auth/Users/login/customer": {
       "post": {
         "tags": [
           "Users"
@@ -51,14 +51,107 @@
         },
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginUserResult"
-                }
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/Users/login/customer/google": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "LoginCustomerWithGoogle",
+        "requestBody": {
+          "x-name": "loginUserCommand",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginUserWithGoogleCommand"
               }
             }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/Users/register/organizer": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "RegisterOrganizer",
+        "requestBody": {
+          "x-name": "registerUserCommand",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterUserCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/Users/login/organizer": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "LoginOrganizer",
+        "requestBody": {
+          "x-name": "loginUserCommand",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginUserCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/Users/login/organizer/google": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "LoginOrganizerWithGoogle",
+        "requestBody": {
+          "x-name": "loginUserCommand",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginUserWithGoogleCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
           }
         }
       }
@@ -81,22 +174,6 @@
           }
         }
       },
-      "LoginUserResult": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "accessToken": {
-            "type": "string"
-          },
-          "tokenType": {
-            "type": "string"
-          },
-          "expiresIn": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
       "LoginUserCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -105,6 +182,21 @@
             "type": "string"
           },
           "password": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginUserWithGoogleCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "redirectUri": {
             "type": "string"
           },
           "role": {

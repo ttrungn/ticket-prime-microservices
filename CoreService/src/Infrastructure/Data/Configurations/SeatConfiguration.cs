@@ -2,55 +2,64 @@ using CoreService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace CoreService.Infrastructure.Data.Configurations
+namespace CoreService.Infrastructure.Persistence.Configurations
 {
     public class SeatConfiguration : IEntityTypeConfiguration<Seat>
     {
         public void Configure(EntityTypeBuilder<Seat> builder)
         {
-            // Map to table
+            // Table configuration (optional, will default to table name from DbSet)
             builder.ToTable("Seat");
 
-            // Primary key
+            // Primary Key
             builder.HasKey(s => s.Id);
 
-            // Foreign key property
-            builder.Property(s => s.SeatSectionRowId)
-                   .IsRequired();
+            // Properties configuration
+            builder.Property(s => s.SeatNumber)
+                .IsRequired()
+                .HasMaxLength(50); // Adjust the length as needed
 
-            // Navigation: SeatSectionRow
+            builder.Property(s => s.SeatGuid)
+                .IsRequired();
+
+            builder.Property(s => s.PositionX)
+                .IsRequired();
+
+            builder.Property(s => s.PositionY)
+                .IsRequired();
+
+            builder.Property(s => s.Radius)
+                .IsRequired();
+
+            builder.Property(s => s.SeatStatus)
+                .IsRequired()
+                .HasConversion<string>(); // Ensures the SeatStatus enum is stored as a string in the DB
+
+            // Relationships configuration with OnDelete behavior
             builder.HasOne(s => s.SeatSectionRow)
-                   .WithMany(r => r.Seats)
-                   .HasForeignKey(s => s.SeatSectionRowId);
+                .WithMany(sr => sr.Seats) // Assuming SeatSectionRow doesn't have a navigation property back to Seat
+                .HasForeignKey(s => s.SeatSectionRowId);
 
-            // Code, Name, Description
-            builder.Property(s => s.Code)
-                   .IsRequired()
-                   .HasMaxLength(50);
+            builder.HasOne(s => s.TicketType)
+                .WithMany(tt => tt.Seats) // Assuming TicketType doesn't have a navigation property back to Seat
+                .HasForeignKey(s => s.TicketTypeId)
+                .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Property(s => s.Name)
-                   .IsRequired()
-                   .HasMaxLength(100);
-
-            builder.Property(s => s.Description)
-                   .IsRequired()
-                   .HasMaxLength(255);
-
-            // Auditable fields
+            // Auditable fields configuration
             builder.Property(s => s.CreatedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(s => s.LastModifiedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAddOrUpdate();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAddOrUpdate();
 
             builder.Property(s => s.DeleteAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(s => s.DeleteFlag)
-                   .HasDefaultValue(false);
+                .HasDefaultValue(false);
         }
     }
 }

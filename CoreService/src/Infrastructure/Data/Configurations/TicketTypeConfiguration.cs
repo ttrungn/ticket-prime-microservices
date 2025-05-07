@@ -8,48 +8,53 @@ namespace CoreService.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<TicketType> builder)
         {
-            // Map to table
+            // Table configuration (optional, will default to table name from DbSet)
             builder.ToTable("TicketType");
 
-            // Primary key
+            // Primary Key
             builder.HasKey(tt => tt.Id);
 
-            // Foreign key to Organizer
-            builder.Property(tt => tt.OrganizerId)
-                   .IsRequired();
-            builder.HasOne(tt => tt.Organizer)
-                   .WithMany(o => o.TicketTypes)
-                   .HasForeignKey(tt => tt.OrganizerId);
-
-            // Name and Description
+            // Properties configuration
             builder.Property(tt => tt.Name)
-                   .IsRequired()
-                   .HasMaxLength(100);
+                .IsRequired()
+                .HasMaxLength(255); // Adjust the max length as needed
 
-            builder.Property(tt => tt.Description)
-                   .IsRequired()
-                   .HasMaxLength(500);
+            builder.Property(tt => tt.Color)
+                .IsRequired()
+                .HasMaxLength(7); // Assuming Color is in a hex format like "#FFFFFF"
 
-            // Relationship to Tickets
+            // Relationships configuration with OnDelete behavior
+            builder.HasOne(tt => tt.Venue)
+                .WithMany(v => v.TicketTypes) // Assuming Venue has a navigation property back to TicketType
+                .HasForeignKey(tt => tt.VenueId);
+
             builder.HasMany(tt => tt.Tickets)
-                   .WithOne(t => t.TicketType)
-                   .HasForeignKey(t => t.TypeId);
+                .WithOne(t => t.TicketType) // Assuming Ticket has a navigation property back to TicketType
+                .HasForeignKey(t => t.TicketTypeId);
 
-            // Auditable fields
+            builder.HasMany(tt => tt.TypeServices)
+                .WithOne(ts => ts.TicketType) // Assuming TypeService has a navigation property back to TicketType
+                .HasForeignKey(ts => ts.TicketTypeId);
+
+            builder.HasMany(tt => tt.Seats)
+                .WithOne(s => s.TicketType) // Assuming Seat has a navigation property back to TicketType
+                .HasForeignKey(s => s.TicketTypeId);
+
+            // Auditable fields configuration
             builder.Property(tt => tt.CreatedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(tt => tt.LastModifiedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAddOrUpdate();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAddOrUpdate();
 
             builder.Property(tt => tt.DeleteAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(tt => tt.DeleteFlag)
-                   .HasDefaultValue(false);
+                .HasDefaultValue(false);
         }
     }
 }

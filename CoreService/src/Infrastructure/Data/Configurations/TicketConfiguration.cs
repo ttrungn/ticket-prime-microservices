@@ -1,4 +1,3 @@
-using CoreService.Domain.Constants;
 using CoreService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -9,84 +8,60 @@ namespace CoreService.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Ticket> builder)
         {
-            // Table mapping
+            // Table configuration (optional, will default to table name from DbSet)
             builder.ToTable("Ticket");
 
-            // Primary key
+            // Primary Key
             builder.HasKey(t => t.Id);
 
-            // Optional relationship to Customer
-            builder.Property(t => t.CustomerId)
-                   .IsRequired(false);
-            builder.HasOne(t => t.Customer)
-                   .WithMany(c => c.Tickets)
-                   .HasForeignKey(t => t.CustomerId)
-                   .OnDelete(DeleteBehavior.SetNull);
-
-            // Required relationship to Event
-            builder.Property(t => t.EventId)
-                   .IsRequired();
-            builder.HasOne(t => t.Event)
-                   .WithMany(e => e.Tickets)
-                   .HasForeignKey(t => t.EventId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
-            // Required relationship to Type
-            builder.Property(t => t.TypeId)
-                   .IsRequired();
-            builder.HasOne(t => t.TicketType)
-                   .WithMany(ty => ty.Tickets)
-                   .HasForeignKey(t => t.TypeId)
-                   .OnDelete(DeleteBehavior.Restrict);
-
-            // Required relationship to Seat
-            builder.Property(t => t.SeatId)
-                   .IsRequired();
-            builder.HasOne(t => t.Seat)
-                   .WithMany()
-                   .HasForeignKey(t => t.SeatId)
-                   .OnDelete(DeleteBehavior.Restrict);
-
-            // Price
+            // Properties configuration
             builder.Property(t => t.Price)
-                   .IsRequired()
-                   .HasColumnType("decimal(18,2)");
+                .IsRequired()
+                .HasColumnType("decimal(18,2)"); // Adjust precision as needed
 
-            // TicketStatus enum as int
             builder.Property(t => t.TicketStatus)
-                   .HasConversion<int>()
-                   .IsRequired();
+                .IsRequired()
+                .HasConversion<int>(); // Enum will be stored as an integer in the DB
 
-            // ReservedUntil and SoldAt
-            builder.Property(t => t.ReservedUntil)
-                   .IsRequired(false);
-            builder.Property(t => t.SoldAt)
-                   .IsRequired(false);
-
-            // IsUsed flag
-            builder.Property(t => t.IsUsed)
-                   .IsRequired();
-
-            // Notes
             builder.Property(t => t.Notes)
-                   .IsRequired(false)
-                   .HasMaxLength(500);
+                .IsRequired()
+                .HasMaxLength(1000); // Adjust max length as needed
 
-            // Auditable fields
+            // Relationships configuration with OnDelete behavior
+            builder.HasOne(t => t.Customer)
+                .WithMany(c => c.Tickets) // Assuming Customer has a navigation property back to Ticket
+                .HasForeignKey(t => t.CustomerId);
+
+            builder.HasOne(t => t.Event)
+                .WithMany(e => e.Tickets) // Assuming Event has a navigation property back to Ticket
+                .HasForeignKey(t => t.EventId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(t => t.TicketType)
+                .WithMany(tt => tt.Tickets) // Assuming TicketType has a navigation property back to Ticket
+                .HasForeignKey(t => t.TicketTypeId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(t => t.Seat)
+                .WithOne() // Assuming Seat doesn't have a navigation property back to Ticket
+                .HasForeignKey<Ticket>(t => t.SeatId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Auditable fields configuration
             builder.Property(t => t.CreatedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(t => t.LastModifiedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAddOrUpdate();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAddOrUpdate();
 
             builder.Property(t => t.DeleteAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(t => t.DeleteFlag)
-                   .HasDefaultValue(false);
+                .HasDefaultValue(false);
         }
     }
 }

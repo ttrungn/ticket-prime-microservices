@@ -8,100 +8,67 @@ namespace CoreService.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Organizer> builder)
         {
-            // Map to table
+            // Table configuration (optional, will default to table name from DbSet)
             builder.ToTable("Organizer");
 
-            // Primary key
+            // Primary Key
             builder.HasKey(o => o.Id);
 
-            // UserId
+            // Properties configuration
             builder.Property(o => o.UserId)
-                   .IsRequired()
-                   .HasMaxLength(450);
+                .IsRequired()
+                .HasMaxLength(255); // Adjust the max length as needed
 
-            // OrganizerCode
             builder.Property(o => o.OrganizerCode)
-                   .IsRequired()
-                   .HasMaxLength(50);
-            builder.HasIndex(o => o.OrganizerCode)
-                   .IsUnique();
+                .IsRequired()
+                .HasMaxLength(255); // Adjust the max length as needed
 
-            // Name
             builder.Property(o => o.Name)
-                   .IsRequired()
-                   .HasMaxLength(100);
+                .IsRequired()
+                .HasMaxLength(255); // Adjust the max length as needed
 
-            // ContactEmail (owned)
             builder.OwnsOne(o => o.ContactEmail, email =>
             {
-                email.Property(e => e.Value)
-                     .HasColumnName("ContactEmail")
-                     .IsRequired()
-                     .HasMaxLength(254);
+                email.Property(e => e.Value).IsRequired().HasMaxLength(255); // Adjust max length for email
             });
 
-            // PhoneNumber (owned)
             builder.OwnsOne(o => o.PhoneNumber, phone =>
             {
-                phone.Property(p => p.Value)
-                     .HasColumnName("PhoneNumber")
-                     .IsRequired()
-                     .HasMaxLength(15);
+                phone.Property(p => p.Value).IsRequired().HasMaxLength(20); // Adjust max length for phone number
             });
 
-            // AvatarUrl conversion
             builder.Property(o => o.AvatarUrl)
-                   .HasConversion(
-                       uri => uri.ToString(),
-                       str => new Uri(str))
-                   .HasColumnName("AvatarUrl")
-                   .IsRequired(false)
-                   .HasMaxLength(255);
+                .IsRequired()
+                .HasMaxLength(1000); // Adjust max length for URL
 
-            // Website conversion
             builder.Property(o => o.Website)
-                   .HasConversion(
-                       uri => uri.ToString(),
-                       str => new Uri(str))
-                   .HasColumnName("Website")
-                   .IsRequired(false)
-                   .HasMaxLength(255);
+                .IsRequired()
+                .HasMaxLength(1000); // Adjust max length for URL
 
-            // Bio
             builder.Property(o => o.Bio)
-                   .IsRequired()
-                   .HasMaxLength(1000);
+                .IsRequired()
+                .HasMaxLength(1000); // Adjust max length for Bio text
 
-            // Event Relationship
+            // Relationships configuration with OnDelete behavior
             builder.HasMany(o => o.Events)
-                   .WithOne(e => e.Organizer)
-                   .HasForeignKey(e => e.OrganizerId);
+                .WithOne(e => e.Organizer)
+                .HasForeignKey(e => e.OrganizerId);
 
-            // TicketType Relationship
-            builder.HasMany(o => o.TicketTypes)
-                   .WithOne(tt => tt.Organizer)
-                   .HasForeignKey(tt => tt.OrganizerId);
-
-            // TypeService Relationship
-            builder.HasMany(o => o.TypeServices)
-                   .WithOne(t => t.Organizer)
-                   .HasForeignKey(t => t.OrganizerId);
-
-            // Auditable fields
+            // Auditable fields configuration
             builder.Property(o => o.CreatedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(o => o.LastModifiedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAddOrUpdate();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAddOrUpdate();
 
             builder.Property(o => o.DeleteAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(o => o.DeleteFlag)
-                   .HasDefaultValue(false);
+                .HasDefaultValue(false);
         }
     }
 }

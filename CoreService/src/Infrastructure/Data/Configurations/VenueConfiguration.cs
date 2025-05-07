@@ -8,93 +8,55 @@ namespace CoreService.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Venue> builder)
         {
-            // Map to table
+            // Table configuration (optional, will default to table name from DbSet)
             builder.ToTable("Venue");
 
-            // Primary key
+            // Primary Key
             builder.HasKey(v => v.Id);
 
-            // Code, Name, Description
-            builder.Property(v => v.Code)
-                   .IsRequired()
-                   .HasMaxLength(50);
-
+            // Properties configuration
             builder.Property(v => v.Name)
-                   .IsRequired()
-                   .HasMaxLength(100);
+                .IsRequired()
+                .HasMaxLength(255); // Adjust the max length as needed
 
-            builder.Property(v => v.Description)
-                   .IsRequired()
-                   .HasMaxLength(255);
+            builder.Property(v => v.BackgroundImageUrl)
+                .HasMaxLength(1000); // Adjust max length as needed
 
-            // Capacity
-            builder.Property(v => v.Capacity)
-                   .IsRequired();
+            builder.Property(v => v.Width)
+                .IsRequired();
 
-            // Owned Address value-object
-            builder.OwnsOne(v => v.Address, address =>
-            {
-                address.Property(a => a.Street)
-                       .HasColumnName("Street")
-                       .IsRequired()
-                       .HasMaxLength(200);
+            builder.Property(v => v.Height)
+                .IsRequired();
 
-                address.Property(a => a.City)
-                       .HasColumnName("City")
-                       .IsRequired()
-                       .HasMaxLength(100);
+            // Relationships configuration with OnDelete behavior
+            builder.HasOne(v => v.Event)
+                .WithOne(e => e.Venue) // Assuming Event has a navigation property back to Venue
+                .HasForeignKey<Venue>(v => v.EventId);
 
-                address.Property(a => a.Country)
-                       .HasColumnName("Country")
-                       .IsRequired()
-                       .HasMaxLength(100);
+            builder.HasMany(v => v.TicketTypes)
+                .WithOne(tt => tt.Venue) // Assuming TicketType has a navigation property back to Venue
+                .HasForeignKey(tt => tt.VenueId);
 
-                address.Property(a => a.ZipCode)
-                       .HasColumnName("ZipCode")
-                       .IsRequired()
-                       .HasMaxLength(20);
-            });
-
-            // Coordinates
-            builder.Property(v => v.Longtitude)
-                   .IsRequired();
-
-            builder.Property(v => v.Latitude)
-                   .IsRequired();
-
-            // ImageUrl conversion
-            builder.Property(v => v.ImageUrl)
-                   .IsRequired()
-                   .HasConversion(
-                       uri => uri.ToString(),
-                       str => new Uri(str))
-                   .HasColumnName("ImageUrl");
-
-            // Relationship to SeatSections
             builder.HasMany(v => v.SeatSections)
-                   .WithOne(s => s.Venue)
-                   .HasForeignKey(s => s.VenueId);
+                .WithOne(ss => ss.Venue) // Assuming SeatSection has a navigation property back to Venue
+                .HasForeignKey(ss => ss.VenueId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Relationship to Events
-            builder.HasMany(v => v.Events)
-                   .WithOne(e => e.Venue)
-                   .HasForeignKey(e => e.VenueId);
-
-            // Auditable fields
+            // Auditable fields configuration
             builder.Property(v => v.CreatedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(v => v.LastModifiedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAddOrUpdate();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAddOrUpdate();
 
             builder.Property(v => v.DeleteAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(v => v.DeleteFlag)
-                   .HasDefaultValue(false);
+                .HasDefaultValue(false);
         }
     }
 }

@@ -2,8 +2,8 @@ namespace CoreService.Domain.ValueObjects
 {
     public partial class Name : ValueObject
     {
-        public string First { get; private set; } = default!;
-        public string Last { get; private set; } = default!;
+        public string First { get; private set; } = null!;
+        public string Last { get; private set; } = null!;
         public string Full => $"{First} {Last}";
         public Name() { }
 

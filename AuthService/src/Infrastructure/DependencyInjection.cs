@@ -1,19 +1,20 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using AuthService.Application.Common.Interfaces;
 using AuthService.Infrastructure.Data;
 using AuthService.Infrastructure.Data.Interceptors;
+using AuthService.Infrastructure.Google;
 using AuthService.Infrastructure.Identity;
-using AuthService.Infrastructure.Kafka;
+using AuthService.Infrastructure.MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace AuthService.Infrastructure;
 
 public static class DependencyInjection
 {
@@ -32,7 +33,8 @@ public static class DependencyInjection
         });
 
 
-        builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+        builder.Services.AddScoped<IApplicationDbContext>(provider =>
+            provider.GetRequiredService<ApplicationDbContext>());
 
         builder.Services.AddScoped<ApplicationDbContextInitialiser>();
 
@@ -42,33 +44,39 @@ public static class DependencyInjection
             .AddIdentityCore<ApplicationUser>()
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddSignInManager<SignInManager<ApplicationUser>>()
             .AddDefaultTokenProviders();
 
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                        .AddJwtBearer(options =>
-                        {
-                            var privateKeyText = File.ReadAllText("Keys/private.key");
-                            var rsa = RSA.Create();
-                            rsa.ImportFromPem(privateKeyText);
-                            var signingKey = new RsaSecurityKey(rsa);
+        builder.Services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                var privateKeyText = File.ReadAllText("Keys/private.key");
+                var rsa = RSA.Create();
+                rsa.ImportFromPem(privateKeyText);
+                var signingKey = new RsaSecurityKey(rsa);
 
-                            options.TokenValidationParameters = new TokenValidationParameters
-                            {
-                                ValidateIssuer = true,
-                                ValidateAudience = true,
-                                ValidateLifetime = true,
-                                ValidateIssuerSigningKey = true,
-                                ClockSkew = TimeSpan.Zero,
-                                ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-                                ValidAudience = builder.Configuration["JwtSettings:Audience"],
-
-                                IssuerSigningKey = signingKey
-                            };
-                        });
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+                    ValidAudience = builder.Configuration["JwtSettings:Audience"],
+                    IssuerSigningKey = signingKey
+                };
+            });
 
 
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddTransient<IIdentityService, IdentityService>();
+        builder.Services.AddTransient<IGoogleService, GoogleService>();
         builder.Services.AddScoped(typeof(IMassTransitService<>), typeof(MassTransitService<>));
 
         builder.Services.AddAuthorization();

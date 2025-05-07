@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Identity" />
+    <PackageReference Include="Google.Apis.Auth" />
     <PackageReference Include="MassTransit" />
     <PackageReference Include="MassTransit.Kafka" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />

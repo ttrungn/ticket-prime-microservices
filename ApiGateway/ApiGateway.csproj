@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ContainerPort Include="9000" Type="tcp"/>
+    <PackageReference Include="Ardalis.GuardClauses" Version="5.0.0" />
     <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0"/>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.4"/>
     <None Include="Keys\public.key">

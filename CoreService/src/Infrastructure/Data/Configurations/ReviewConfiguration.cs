@@ -8,57 +8,48 @@ namespace CoreService.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Review> builder)
         {
-            // Table mapping
+            // Table configuration (optional, will default to table name from DbSet)
             builder.ToTable("Review");
 
-            // Primary key
+            // Primary Key
             builder.HasKey(r => r.Id);
 
-            // Self-referencing relationship for replies
-            builder.Property(r => r.ParentId)
-                   .IsRequired(false);
-            builder.HasOne<Review>()
-                   .WithMany(r => r.Replies)
-                   .HasForeignKey(r => r.ParentId);
-
-            // CustomerId column
-            builder.Property(r => r.CustomerId)
-                   .IsRequired();
-            // Customer Relationship
-            builder.HasOne(r => r.Customer)
-                   .WithMany(c => c.Reviews)
-                   .HasForeignKey(r => r.CustomerId);
-
-            // Event relationship
-            builder.Property(r => r.EventId)
-                   .IsRequired();
-            builder.HasOne(r => r.Event)
-                   .WithMany(e => e.Reviews)
-                   .HasForeignKey(r => r.EventId);
-
-            // Rating and Comment
+            // Properties configuration
             builder.Property(r => r.Rating)
-                   .IsRequired();
+                .IsRequired();
 
             builder.Property(r => r.Comment)
-                   .IsRequired()
-                   .HasMaxLength(1000);
+                .IsRequired()
+                .HasMaxLength(1000); // Adjust the max length of Comment as needed
 
-            // Auditable fields
+            // Relationships configuration
+            builder.HasOne(r => r.ParentReview)
+                .WithMany(r => r.Replies)
+                .HasForeignKey(r => r.ParentReviewId);
+
+            builder.HasOne(r => r.Customer)
+                .WithMany(c => c.Reviews) // Assuming Customer has a navigation property back to Reviews
+                .HasForeignKey(r => r.CustomerId);
+
+            builder.HasOne(r => r.Event)
+                .WithMany(e => e.Reviews) // Assuming Event has a navigation property back to Reviews
+                .HasForeignKey(r => r.EventId);
+
+            // Auditable fields configuration
             builder.Property(r => r.CreatedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(r => r.LastModifiedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAddOrUpdate();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAddOrUpdate();
 
             builder.Property(r => r.DeleteAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(r => r.DeleteFlag)
-                   .HasDefaultValue(false);
+                .HasDefaultValue(false);
         }
     }
 }

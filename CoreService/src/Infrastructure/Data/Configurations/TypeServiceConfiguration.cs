@@ -8,48 +8,36 @@ namespace CoreService.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<TypeService> builder)
         {
-            // Map to table
+            // Table configuration (optional, will default to table name from DbSet)
             builder.ToTable("TypeService");
 
-            // Primary key
+            // Primary Key
             builder.HasKey(ts => ts.Id);
 
-            // Foreign key to Organizer
-            builder.Property(ts => ts.OrganizerId)
-                   .IsRequired();
-            builder.HasOne(ts => ts.Organizer)
-                   .WithMany(o => o.TypeServices)
-                   .HasForeignKey(ts => ts.OrganizerId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
-            // Foreign key to TicketType
-            builder.Property(ts => ts.TypeId)
-                   .IsRequired();
-            builder.HasOne(ts => ts.TicketType)
-                   .WithMany(tt => tt.TypeServices)
-                   .HasForeignKey(ts => ts.TypeId)
-                   .OnDelete(DeleteBehavior.Restrict);
-
-            // Name property
+            // Properties configuration
             builder.Property(ts => ts.Name)
-                   .IsRequired()
-                   .HasMaxLength(100);
+                .IsRequired()
+                .HasMaxLength(255); // Adjust the max length as needed
 
-            // Auditable fields
+            builder.HasOne(ts => ts.TicketType)
+                .WithMany(tt => tt.TypeServices) // Assuming TicketType has a navigation property back to TypeService
+                .HasForeignKey(ts => ts.TicketTypeId);
+
+            // Auditable fields configuration
             builder.Property(ts => ts.CreatedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(ts => ts.LastModifiedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAddOrUpdate();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAddOrUpdate();
 
             builder.Property(ts => ts.DeleteAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(ts => ts.DeleteFlag)
-                   .HasDefaultValue(false);
+                .HasDefaultValue(false);
         }
     }
 }

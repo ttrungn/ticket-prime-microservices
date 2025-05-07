@@ -8,90 +8,84 @@ namespace CoreService.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Event> builder)
         {
-            // Map to table
+            // Table configuration (optional, will default to table name from DbSet)
             builder.ToTable("Event");
 
             // Primary Key
             builder.HasKey(e => e.Id);
 
-            // Foreign keys and navigations
-            builder.Property(e => e.OrganizerId)
-                   .IsRequired();
-            builder.HasOne(e => e.Organizer)
-                   .WithMany(o => o.Events)
-                   .HasForeignKey(e => e.OrganizerId)
-                   .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Property(e => e.VenueId)
-                   .IsRequired();
-            builder.HasOne(e => e.Venue)
-                   .WithMany(v => v.Events)
-                   .HasForeignKey(e => e.VenueId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Property(e => e.SubCategoryId)
-                   .IsRequired();
-            builder.HasOne(e => e.SubCategory)
-                   .WithMany()
-                   .HasForeignKey(e => e.SubCategoryId);
-
-            // ImageUrl conversion
-            builder.Property(e => e.ImageUrl)
-                   .HasConversion(
-                       uri => uri.ToString(),
-                       str => new Uri(str))
-                   .IsRequired()
-                   .HasColumnName("ImageUrl");
-
-            // Scalar properties
+            // Properties configuration
             builder.Property(e => e.Code)
-                   .IsRequired()
-                   .HasMaxLength(50);
+                .IsRequired()
+                .HasMaxLength(50); // Adjust the length as needed
 
             builder.Property(e => e.Title)
-                   .IsRequired()
-                   .HasMaxLength(200);
+                .IsRequired()
+                .HasMaxLength(255); // Adjust the length as needed
 
             builder.Property(e => e.Description)
-                   .IsRequired()
-                   .HasMaxLength(1000);
+                .IsRequired()
+                .HasMaxLength(1000); // Adjust the length as needed
+
+            builder.Property(e => e.ImageUrl)
+                .IsRequired()
+                .HasMaxLength(1000); // Adjust the length as needed
+
+            builder.OwnsOne(e => e.Address, address =>
+            {
+                address.Property(a => a.Street).IsRequired().HasMaxLength(255);
+                address.Property(a => a.City).IsRequired().HasMaxLength(255);
+                address.Property(a => a.Country).IsRequired().HasMaxLength(255);
+            });
 
             builder.Property(e => e.TotalTickets)
-                   .IsRequired();
+                .IsRequired();
 
             builder.Property(e => e.TotalTicketsAvailable)
-                   .IsRequired();
+                .IsRequired();
 
             builder.Property(e => e.StartTime)
-                   .IsRequired();
+                .IsRequired();
 
             builder.Property(e => e.EndTime)
-                   .IsRequired();
+                .IsRequired();
 
-            // One-to-many relationships
+            // Relationships configuration
+            builder.HasOne(e => e.Organizer)
+                .WithMany(o => o.Events) // Assuming Organizer has a navigation property back to Event (optional)
+                .HasForeignKey(e => e.OrganizerId);
+
+            builder.HasOne(e => e.Venue)
+                .WithOne(v => v.Event) // One-to-one relationship
+                .HasForeignKey<Event>(e => e.VenueId);
+
+            builder.HasOne(e => e.SubCategory)
+                .WithMany() // Assuming SubCategory has a navigation property back to Event (optional)
+                .HasForeignKey(e => e.SubCategoryId);
+
             builder.HasMany(e => e.Tickets)
-                   .WithOne(t => t.Event)
-                   .HasForeignKey(t => t.EventId);
+                .WithOne()
+                .HasForeignKey("EventId");
 
             builder.HasMany(e => e.Reviews)
-                   .WithOne(r => r.Event)
-                   .HasForeignKey(r => r.EventId);
+                .WithOne()
+                .HasForeignKey("EventId");
 
-            // Auditable fields
+            // Auditable fields configuration
             builder.Property(e => e.CreatedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(e => e.LastModifiedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAddOrUpdate();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAddOrUpdate();
 
             builder.Property(e => e.DeleteAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(e => e.DeleteFlag)
-                   .HasDefaultValue(false);
+                .HasDefaultValue(false);
         }
     }
 }

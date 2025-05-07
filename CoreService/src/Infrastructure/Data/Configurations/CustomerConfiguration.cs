@@ -8,108 +8,72 @@ namespace CoreService.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Customer> builder)
         {
+            // Table configuration (optional, will default to table name from DbSet)
             builder.ToTable("Customer");
 
+            // Primary Key
             builder.HasKey(c => c.Id);
 
-            // UserId (e.g. ASP.NET Identity default length)
+            // Properties configuration
             builder.Property(c => c.UserId)
-                   .IsRequired()
-                   .HasMaxLength(450);
+                .IsRequired()
+                .HasMaxLength(255); // You can adjust the max length as needed
 
-            // CustomerCode (adjust length to suit your needs)
             builder.Property(c => c.CustomerCode)
-                   .IsRequired()
-                   .HasMaxLength(20);
-            builder.HasIndex(c => c.CustomerCode)
-                   .IsUnique();
+                .IsRequired()
+                .HasMaxLength(255); // You can adjust the max length as needed
 
-            // AvatarUrl conversion from/to string
             builder.Property(c => c.AvatarUrl)
-                   .HasConversion(
-                       uri => uri != null ? uri.ToString() : null,
-                       str => !string.IsNullOrEmpty(str) ? new Uri(str) : null)
-                   .HasColumnName("AvatarUrl");
+                .HasMaxLength(1000); // Adjust URL length as needed
 
-            // Gender as int
-            builder.Property(c => c.Gender)
-                   .HasConversion<int>()
-                   .IsRequired();
-
-            builder.Property(c => c.Age)
-                   .IsRequired();
-
-            // Owned Name value‐object
             builder.OwnsOne(c => c.Name, name =>
             {
-                name.Property(n => n.First)
-                    .HasColumnName("FirstName")
-                    .IsRequired()
-                    .HasMaxLength(100);
-
-                name.Property(n => n.Last)
-                    .HasColumnName("LastName")
-                    .IsRequired()
-                    .HasMaxLength(100);
+                name.Property(n => n.First).IsRequired().HasMaxLength(255);
+                name.Property(n => n.Last).IsRequired().HasMaxLength(255);
             });
 
-            // Owned PhoneNumber value‐object
             builder.OwnsOne(c => c.PhoneNumber, phone =>
             {
-                phone.Property(p => p.Value)
-                     .HasColumnName("PhoneNumber")
-                     .HasMaxLength(15);
+                phone.Property(p => p.Value).IsRequired().HasMaxLength(20); // Adjust max length as needed
             });
 
-            // Owned Address value‐object
+            // Relationships
+            builder.HasMany(c => c.Reviews)
+                .WithOne(r => r.Customer)
+                .HasForeignKey(r => r.CustomerId);
+
+            builder.HasMany(c => c.Tickets)
+                .WithOne(t => t.Customer)
+                .HasForeignKey(t => t.CustomerId);
+
             builder.OwnsOne(c => c.Address, address =>
             {
-                address.Property(a => a.Street)
-                       .HasColumnName("Street")
-                       .IsRequired()
-                       .HasMaxLength(200);
-
-                address.Property(a => a.City)
-                       .HasColumnName("City")
-                       .IsRequired()
-                       .HasMaxLength(100);
-
-                address.Property(a => a.Country)
-                       .HasColumnName("Country")
-                       .IsRequired()
-                       .HasMaxLength(100);
-
-                address.Property(a => a.ZipCode)
-                       .HasColumnName("ZipCode")
-                       .IsRequired()
-                       .HasMaxLength(20);
+                address.Property(a => a.Street).IsRequired().HasMaxLength(255);
+                address.Property(a => a.City).IsRequired().HasMaxLength(255);
+                address.Property(a => a.Country).IsRequired().HasMaxLength(255);
             });
 
-            // Review Relationship
-            builder.HasMany(c => c.Reviews)
-                   .WithOne(r => r.Customer)
-                   .HasForeignKey(r => r.CustomerId);
+            builder.Property(c => c.Gender)
+                .IsRequired();
 
-            // Ticket Relationship
-            builder.HasMany(c => c.Tickets)
-                   .WithOne(t => t.Customer)
-                   .HasForeignKey(t => t.CustomerId);
+            builder.Property(c => c.Age)
+                .IsRequired();
 
-            // Auditable fields (inherited)
+            // Auditable fields configuration
             builder.Property(c => c.CreatedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(c => c.LastModifiedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAddOrUpdate();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAddOrUpdate();
 
             builder.Property(c => c.DeleteAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .ValueGeneratedOnAdd();
+                .HasDefaultValueSql("SYSDATETIMEOFFSET()")
+                .ValueGeneratedOnAdd();
 
             builder.Property(c => c.DeleteFlag)
-                   .HasDefaultValue(false);
+                .HasDefaultValue(false);
         }
     }
 }
