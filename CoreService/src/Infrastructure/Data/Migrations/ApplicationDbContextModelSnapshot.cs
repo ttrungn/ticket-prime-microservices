@@ -190,6 +190,9 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                     b.HasIndex("SubCategoryId");
 
+                    b.HasIndex("VenueId")
+                        .IsUnique();
+
                     b.ToTable("Event", (string)null);
                 });
 
@@ -343,8 +346,9 @@ namespace CoreService.Infrastructure.Data.Migrations
                     b.Property<float>("Radius")
                         .HasColumnType("real");
 
-                    b.Property<Guid>("SeatGuid")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("SeatCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SeatNumber")
                         .IsRequired()
@@ -699,9 +703,6 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("Height")
                         .HasColumnType("int");
 
@@ -715,13 +716,15 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<Guid>("OrganizerId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Width")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventId")
-                        .IsUnique();
+                    b.HasIndex("OrganizerId");
 
                     b.ToTable("Venue", (string)null);
                 });
@@ -825,6 +828,12 @@ namespace CoreService.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CoreService.Domain.Entities.Venue", "Venue")
+                        .WithOne()
+                        .HasForeignKey("CoreService.Domain.Entities.Event", "VenueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsOne("CoreService.Domain.ValueObjects.Address", "Address", b1 =>
                         {
                             b1.Property<Guid>("EventId")
@@ -863,6 +872,8 @@ namespace CoreService.Infrastructure.Data.Migrations
                     b.Navigation("Organizer");
 
                     b.Navigation("SubCategory");
+
+                    b.Navigation("Venue");
                 });
 
             modelBuilder.Entity("CoreService.Domain.Entities.Organizer", b =>
@@ -1044,13 +1055,13 @@ namespace CoreService.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("CoreService.Domain.Entities.Venue", b =>
                 {
-                    b.HasOne("CoreService.Domain.Entities.Event", "Event")
-                        .WithOne("Venue")
-                        .HasForeignKey("CoreService.Domain.Entities.Venue", "EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("CoreService.Domain.Entities.Organizer", "Organizer")
+                        .WithMany("Venues")
+                        .HasForeignKey("OrganizerId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Event");
+                    b.Navigation("Organizer");
                 });
 
             modelBuilder.Entity("CoreService.Domain.Entities.Category", b =>
@@ -1070,14 +1081,13 @@ namespace CoreService.Infrastructure.Data.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("Tickets");
-
-                    b.Navigation("Venue")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("CoreService.Domain.Entities.Organizer", b =>
                 {
                     b.Navigation("Events");
+
+                    b.Navigation("Venues");
                 });
 
             modelBuilder.Entity("CoreService.Domain.Entities.Review", b =>

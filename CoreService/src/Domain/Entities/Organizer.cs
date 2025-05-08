@@ -11,5 +11,6 @@ namespace CoreService.Domain.Entities
         public Uri Website { get; set; } = default!;
         public string Bio { get; set; } = default!;
         public List<Event> Events { get; set; } = new();
+        public List<Venue> Venues { get; set; } = new();
     }
 }

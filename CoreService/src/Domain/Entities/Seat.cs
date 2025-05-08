@@ -3,7 +3,7 @@ namespace CoreService.Domain.Entities
     public class Seat : BaseAuditableEntity<Guid>
     {
         public string SeatNumber { get; set; } = null!;
-        public Guid SeatGuid { get; set; }
+        public string SeatCode { get; set; } = null!;
 
         public double PositionX { get; set; }
         public double PositionY { get; set; }

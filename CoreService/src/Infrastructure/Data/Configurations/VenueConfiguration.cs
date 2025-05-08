@@ -29,10 +29,11 @@ namespace CoreService.Infrastructure.Data.Configurations
                 .IsRequired();
 
             // Relationships configuration with OnDelete behavior
-            builder.HasOne(v => v.Event)
-                .WithOne(e => e.Venue) // Assuming Event has a navigation property back to Venue
-                .HasForeignKey<Venue>(v => v.EventId);
-
+            builder.HasOne(v => v.Organizer)
+                .WithMany(o => o.Venues)
+                .HasForeignKey(v => v.OrganizerId)
+                .OnDelete(DeleteBehavior.NoAction);
+            
             builder.HasMany(v => v.TicketTypes)
                 .WithOne(tt => tt.Venue) // Assuming TicketType has a navigation property back to Venue
                 .HasForeignKey(tt => tt.VenueId);

@@ -53,6 +53,10 @@ namespace CoreService.Infrastructure.Data.Configurations
             builder.HasMany(o => o.Events)
                 .WithOne(e => e.Organizer)
                 .HasForeignKey(e => e.OrganizerId);
+            
+            builder.HasMany(o => o.Venues)
+                .WithOne(v => v.Organizer)
+                .HasForeignKey(v => v.OrganizerId);
 
             // Auditable fields configuration
             builder.Property(o => o.CreatedAt)

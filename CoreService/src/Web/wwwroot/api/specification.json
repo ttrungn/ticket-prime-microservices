@@ -6,12 +6,24 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/Test": {
-      "get": {
+    "/api/core/Venues": {
+      "post": {
         "tags": [
-          "Test"
+          "Venues"
         ],
-        "operationId": "GetTest",
+        "operationId": "ImportVenue",
+        "requestBody": {
+          "x-name": "importVenueCommand",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportVenueCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
         "responses": {
           "200": {
             "description": ""
@@ -21,6 +33,155 @@
     }
   },
   "components": {
+    "schemas": {
+      "ImportVenueCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryDto"
+            }
+          },
+          "zones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ZoneDto"
+            }
+          },
+          "size": {
+            "$ref": "#/components/schemas/SizeDto"
+          }
+        }
+      },
+      "CategoryDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        }
+      },
+      "ZoneDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "position": {
+            "$ref": "#/components/schemas/PositionDto"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RowDto"
+            }
+          },
+          "areas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AreaDto"
+            }
+          },
+          "uuid": {
+            "type": "string"
+          },
+          "zone_id": {
+            "type": "string"
+          }
+        }
+      },
+      "PositionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "type": "number",
+            "format": "double"
+          },
+          "y": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "RowDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "position": {
+            "$ref": "#/components/schemas/PositionDto"
+          },
+          "row_number": {
+            "type": "string"
+          },
+          "row_number_position": {
+            "type": "string"
+          },
+          "seats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SeatDto"
+            }
+          },
+          "uuid": {
+            "type": "string"
+          }
+        }
+      },
+      "SeatDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "seat_number": {
+            "type": "string"
+          },
+          "seat_guid": {
+            "type": "string"
+          },
+          "uuid": {
+            "type": "string"
+          },
+          "position": {
+            "$ref": "#/components/schemas/PositionDto"
+          },
+          "category": {
+            "type": "string"
+          },
+          "radius": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "AreaDto": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SizeDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "width": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
     "securitySchemes": {
       "JWT": {
         "type": "apiKey",

@@ -103,13 +103,38 @@ namespace CoreService.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Venue",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrganizerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    BackgroundImageUrl = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Width = table.Column<int>(type: "int", nullable: false),
+                    Height = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Venue", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Venue_Organizer_OrganizerId",
+                        column: x => x.OrganizerId,
+                        principalTable: "Organizer",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Event",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OrganizerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    VenueId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SubCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VenueId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
@@ -142,67 +167,10 @@ namespace CoreService.Infrastructure.Data.Migrations
                         principalTable: "SubCategory",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Review",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ParentReviewId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Rating = table.Column<int>(type: "int", nullable: false),
-                    Comment = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Review", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Review_Customer_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customer",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Review_Event_EventId",
-                        column: x => x.EventId,
-                        principalTable: "Event",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Review_Review_ParentReviewId",
-                        column: x => x.ParentReviewId,
-                        principalTable: "Review",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Venue",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    BackgroundImageUrl = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    Width = table.Column<int>(type: "int", nullable: false),
-                    Height = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Venue", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Venue_Event_EventId",
-                        column: x => x.EventId,
-                        principalTable: "Event",
+                        name: "FK_Event_Venue_VenueId",
+                        column: x => x.VenueId,
+                        principalTable: "Venue",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -254,6 +222,43 @@ namespace CoreService.Infrastructure.Data.Migrations
                         principalTable: "Venue",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Review",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ParentReviewId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
+                    DeleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Review", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Review_Customer_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customer",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Review_Event_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Event",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Review_Review_ParentReviewId",
+                        column: x => x.ParentReviewId,
+                        principalTable: "Review",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -311,7 +316,7 @@ namespace CoreService.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SeatNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    SeatGuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SeatCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PositionX = table.Column<double>(type: "float", nullable: false),
                     PositionY = table.Column<double>(type: "float", nullable: false),
                     Radius = table.Column<float>(type: "real", nullable: false),
@@ -402,6 +407,12 @@ namespace CoreService.Infrastructure.Data.Migrations
                 column: "SubCategoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Event_VenueId",
+                table: "Event",
+                column: "VenueId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Review_CustomerId",
                 table: "Review",
                 column: "CustomerId");
@@ -473,10 +484,9 @@ namespace CoreService.Infrastructure.Data.Migrations
                 column: "TicketTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Venue_EventId",
+                name: "IX_Venue_OrganizerId",
                 table: "Venue",
-                column: "EventId",
-                unique: true);
+                column: "OrganizerId");
         }
 
         /// <inheritdoc />
@@ -495,7 +505,13 @@ namespace CoreService.Infrastructure.Data.Migrations
                 name: "Customer");
 
             migrationBuilder.DropTable(
+                name: "Event");
+
+            migrationBuilder.DropTable(
                 name: "Seat");
+
+            migrationBuilder.DropTable(
+                name: "SubCategory");
 
             migrationBuilder.DropTable(
                 name: "SeatSectionRow");
@@ -504,22 +520,16 @@ namespace CoreService.Infrastructure.Data.Migrations
                 name: "TicketType");
 
             migrationBuilder.DropTable(
+                name: "Category");
+
+            migrationBuilder.DropTable(
                 name: "SeatSection");
 
             migrationBuilder.DropTable(
                 name: "Venue");
 
             migrationBuilder.DropTable(
-                name: "Event");
-
-            migrationBuilder.DropTable(
                 name: "Organizer");
-
-            migrationBuilder.DropTable(
-                name: "SubCategory");
-
-            migrationBuilder.DropTable(
-                name: "Category");
         }
     }
 }

@@ -19,7 +19,7 @@ namespace CoreService.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(50); // Adjust the length as needed
 
-            builder.Property(s => s.SeatGuid)
+            builder.Property(s => s.SeatCode)
                 .IsRequired();
 
             builder.Property(s => s.PositionX)

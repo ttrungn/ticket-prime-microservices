@@ -55,21 +55,21 @@ namespace CoreService.Infrastructure.Data.Configurations
                 .WithMany(o => o.Events) // Assuming Organizer has a navigation property back to Event (optional)
                 .HasForeignKey(e => e.OrganizerId);
 
-            builder.HasOne(e => e.Venue)
-                .WithOne(v => v.Event) // One-to-one relationship
-                .HasForeignKey<Event>(e => e.VenueId);
-
             builder.HasOne(e => e.SubCategory)
                 .WithMany() // Assuming SubCategory has a navigation property back to Event (optional)
                 .HasForeignKey(e => e.SubCategoryId);
 
-            builder.HasMany(e => e.Tickets)
+            builder.HasOne(e => e.Venue)
                 .WithOne()
-                .HasForeignKey("EventId");
+                .HasForeignKey<Event>(e => e.VenueId);
+            
+            builder.HasMany(e => e.Tickets)
+                .WithOne(t => t.Event)
+                .HasForeignKey(t => t.EventId);
 
             builder.HasMany(e => e.Reviews)
-                .WithOne()
-                .HasForeignKey("EventId");
+                .WithOne(r => r.Event)
+                .HasForeignKey(r => r.EventId);
 
             // Auditable fields configuration
             builder.Property(e => e.CreatedAt)
