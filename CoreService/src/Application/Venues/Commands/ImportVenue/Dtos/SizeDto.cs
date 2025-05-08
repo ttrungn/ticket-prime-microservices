@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace CoreService.Application.Venues.Commands.DTOs;
+namespace CoreService.Application.Venues.Commands.ImportVenue.Dtos;
 
 public class SizeDto
 {

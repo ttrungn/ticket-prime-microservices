@@ -6,7 +6,7 @@ namespace CoreService.Domain.Entities
         public Organizer Organizer { get; set; } = null!;
         public Guid SubCategoryId { get; set; }
         public SubCategory SubCategory { get; set; } = null!;
-        public Guid VenueId { get; set; }
+        public Guid? VenueId { get; set; }
         public Venue? Venue { get; set; }
         public Uri ImageUrl { get; set; } = null!;
         public string Code { get; set; } = null!;

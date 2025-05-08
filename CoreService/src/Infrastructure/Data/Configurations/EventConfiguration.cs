@@ -61,7 +61,8 @@ namespace CoreService.Infrastructure.Data.Configurations
 
             builder.HasOne(e => e.Venue)
                 .WithOne()
-                .HasForeignKey<Event>(e => e.VenueId);
+                .HasForeignKey<Event>(e => e.VenueId)
+                .IsRequired(false);
             
             builder.HasMany(e => e.Tickets)
                 .WithOne(t => t.Event)

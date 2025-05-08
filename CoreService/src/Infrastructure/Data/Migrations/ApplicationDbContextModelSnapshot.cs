@@ -181,7 +181,7 @@ namespace CoreService.Infrastructure.Data.Migrations
                     b.Property<int>("TotalTicketsAvailable")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("VenueId")
+                    b.Property<Guid?>("VenueId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -191,7 +191,8 @@ namespace CoreService.Infrastructure.Data.Migrations
                     b.HasIndex("SubCategoryId");
 
                     b.HasIndex("VenueId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[VenueId] IS NOT NULL");
 
                     b.ToTable("Event", (string)null);
                 });
@@ -830,9 +831,7 @@ namespace CoreService.Infrastructure.Data.Migrations
 
                     b.HasOne("CoreService.Domain.Entities.Venue", "Venue")
                         .WithOne()
-                        .HasForeignKey("CoreService.Domain.Entities.Event", "VenueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CoreService.Domain.Entities.Event", "VenueId");
 
                     b.OwnsOne("CoreService.Domain.ValueObjects.Address", "Address", b1 =>
                         {

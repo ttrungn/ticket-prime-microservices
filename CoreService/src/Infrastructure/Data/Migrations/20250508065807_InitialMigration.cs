@@ -134,7 +134,7 @@ namespace CoreService.Infrastructure.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OrganizerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SubCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    VenueId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VenueId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ImageUrl = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
@@ -171,8 +171,7 @@ namespace CoreService.Infrastructure.Data.Migrations
                         name: "FK_Event_Venue_VenueId",
                         column: x => x.VenueId,
                         principalTable: "Venue",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -410,7 +409,8 @@ namespace CoreService.Infrastructure.Data.Migrations
                 name: "IX_Event_VenueId",
                 table: "Event",
                 column: "VenueId",
-                unique: true);
+                unique: true,
+                filter: "[VenueId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Review_CustomerId",

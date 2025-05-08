@@ -1,14 +1,17 @@
 ﻿using CoreService.Application.Common.Interfaces;
-using CoreService.Application.Venues.Commands.DTOs;
+using CoreService.Application.Common.Security;
+using CoreService.Application.Venues.Commands.ImportVenue.Dtos;
+using CoreService.Domain.Constants;
 using CoreService.Domain.Entities;
 
 namespace CoreService.Application.Venues.Commands.ImportVenue;
 
+[Authorize(Roles = Roles.Organizer)]
 public record ImportVenueCommand : IRequest<ImportVenueResult>
 {
     public string Name { get; init; } = null!;
-    public List<CategoryDto> Categories { get; init; } = new();
-    public List<ZoneDto> Zones { get; init; } = new();
+    public IReadOnlyList<CategoryDto> Categories { get; init; } = null!;
+    public IReadOnlyList<ZoneDto> Zones { get; init; } = null!;
     public SizeDto Size { get; init; } = null!;
 }
 
@@ -57,7 +60,7 @@ public class ImportVenueCommandHandler : IRequestHandler<ImportVenueCommand, Imp
                             PositionX = seat.Position.X,
                             PositionY = seat.Position.Y,
                             Radius = seat.Radius,
-                            TicketType = ticketType
+                            TicketTypeId = ticketType.Id
                         };
                     }).ToList();
 
