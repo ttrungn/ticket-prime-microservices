@@ -1,12 +1,13 @@
 ﻿using AuthService.Application.Common.Interfaces;
+using AuthService.Application.Common.Models;
 
 namespace AuthService.Application.Users.Commands.LoginUser;
 
 public record LoginUserCommand : IRequest<LoginUserResult>
 {
-    public string Email { get; set; } = default!;
-    public string Password { get; set; } = default!;
-    public string Role { get; set; } = default!;
+    public string Email { get; set; } = null!;
+    public string Password { get; set; } = null!;
+    public string Role { get; set; } = null!;
 }
 
 public record LoginUserResult(string AccessToken, string TokenType, int ExpiresIn);
@@ -24,18 +25,12 @@ public class LoginUserCommandValidator : AbstractValidator<LoginUserCommand>
     }
 }
 
-public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, LoginUserResult>
+public class LoginUserCommandHandler(IIdentityService identityService)
+    : IRequestHandler<LoginUserCommand, LoginUserResult?>
 {
-    private readonly IIdentityService _identityService;
-    public LoginUserCommandHandler(IIdentityService identityService)
+    public async Task<LoginUserResult?> Handle(LoginUserCommand command, CancellationToken cancellationToken)
     {
-        _identityService = identityService;
-    }
-
-    public async Task<LoginUserResult> Handle(LoginUserCommand command, CancellationToken cancellationToken)
-    {
-        var (result, token, expiresIn) = await _identityService.LoginUserAsync(command.Email, command.Password, command.Role);
-
-        return !result.Succeeded ? throw new UnauthorizedAccessException(result.Errors[0]) : new LoginUserResult(token, "Bearer", expiresIn);
+        (Result result, string token, string tokenType, int expiresIn) = await identityService.LoginUserAsync(command.Email, command.Password, command.Role);
+        return !result.Succeeded ? null : new LoginUserResult(token, tokenType, expiresIn);
     }
 }

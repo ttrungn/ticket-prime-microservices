@@ -2,18 +2,32 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.RateLimiting;
+using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Yarp.ReverseProxy.Transforms;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace ApiGateway
 {
     public static class DependencyInjection
     {
         public static void AddApiGatewayServices(this IHostApplicationBuilder builder)
         {
+            var ticketPrimeUserWebAppUrl = builder.Configuration["TicketPrimeUserWebAppUrl"];
+            Guard.Against.NullOrEmpty(ticketPrimeUserWebAppUrl, message: "Cannot find TicketPrimeUserWebAppUrl in appsettings");
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("TicketPrimeUserWebApp", policy =>
+                {
+                    policy
+                        .WithOrigins(ticketPrimeUserWebAppUrl)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {

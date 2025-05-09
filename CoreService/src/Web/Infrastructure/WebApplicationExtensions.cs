@@ -9,7 +9,7 @@ public static class WebApplicationExtensions
         var groupName = group.GetType().Name;
 
         return app
-            .MapGroup($"/{groupName}")
+            .MapGroup($"/api/core/{groupName}")
             .WithGroupName(groupName)
             .WithTags(groupName);
     }

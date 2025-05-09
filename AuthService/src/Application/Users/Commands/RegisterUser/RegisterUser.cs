@@ -1,12 +1,13 @@
 ﻿using AuthService.Application.Common.Interfaces;
+using AuthService.Domain.Constants;
 
 namespace AuthService.Application.Users.Commands.RegisterUser;
 
 public record RegisterUserCommand : IRequest<string>
 {
-    public string Email { get; set; } = default!;
-    public string Password { get; set; } = default!;
-    public string Role { get; set; } = default!;
+    public string Email { get; set; } = null!;
+    public string Password { get; set; } = null!;
+    public string Role { get; set; } = null!;
 }
 
 public class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
@@ -24,22 +25,21 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
             .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
             .Matches("[0-9]").WithMessage("Password must contain at least one digit.")
             .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
+        
+        RuleFor(x => x.Role)
+            .NotEmpty()
+            .WithMessage("Role must be provided.")
+            .Must(role => role.Equals(Roles.Customer) || role.Equals(Roles.Organizer))
+            .WithMessage("Invalid role name");
     }
 }
 
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, string>
+public class RegisterUserCommandHandler(IIdentityService identityService) : IRequestHandler<RegisterUserCommand, string>
 {
-    private readonly IIdentityService _identityService;
-
-    public RegisterUserCommandHandler(IIdentityService identityService)
-    {
-        _identityService = identityService;
-    }
-
     public async Task<string> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        var (result, userId) = await _identityService.CreateUserAsync(request.Email, request.Password, request.Role);
+        var (result, userId) = await identityService.CreateUserAsync(request.Email, request.Password, request.Role);
 
-        return !result.Succeeded ? throw new UnauthorizedAccessException(result.Errors[0]) : userId;
+        return !result.Succeeded ? result.Errors[0] : userId;
     }
 }

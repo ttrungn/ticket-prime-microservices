@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using AuthService.Domain.Common;
+using AuthService.Domain.Events;
 using Microsoft.AspNetCore.Identity;
 
 namespace AuthService.Infrastructure.Identity;
@@ -13,6 +14,20 @@ public class ApplicationUser : IdentityUser, IBaseAuditableEntity, IBaseEntity
     private readonly List<BaseEvent> _domainEvents = [];
     [NotMapped]
     public IReadOnlyCollection<BaseEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    public ApplicationUser() : base()
+    {
+        CreatedAt = DateTimeOffset.UtcNow;
+        LastModifiedAt = DateTimeOffset.UtcNow;
+        DeleteFlag = false;
+    }
+
+    public ApplicationUser(string username, string email) : this()
+    {
+        UserName = username;
+        Email = email;
+        AddDomainEvent(new UserRegisteredEvent(Id, Email));
+    }
 
     public void AddDomainEvent(BaseEvent domainEvent)
     {

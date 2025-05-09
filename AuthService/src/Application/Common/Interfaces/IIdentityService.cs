@@ -1,4 +1,5 @@
-﻿using AuthService.Application.Common.Models;
+﻿using System.Security.Claims;
+using AuthService.Application.Common.Models;
 
 namespace AuthService.Application.Common.Interfaces;
 
@@ -12,7 +13,9 @@ public interface IIdentityService
 
     Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password, string role);
 
-    Task<(Result Result, string Token, int ExpiresIn)> LoginUserAsync(string email, string password, string role);
+    Task<(Result Result, string Token, string TokenType, int ExpiresIn)> LoginUserAsync(string email, string password, string role);
+
+    Task<(Result Result, string Token, string TokenType, int ExpiresIn)> LoginGoogleUserAsync(string email, string providerKey, string role);
 
     Task<Result> DeleteUserAsync(string userId);
 

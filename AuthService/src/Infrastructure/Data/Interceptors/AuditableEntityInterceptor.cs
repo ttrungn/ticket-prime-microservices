@@ -8,8 +8,8 @@ namespace AuthService.Infrastructure.Data.Interceptors;
 
 public class AuditableEntityInterceptor : SaveChangesInterceptor
 {
-    private readonly IUser _user;
     private readonly TimeProvider _dateTime;
+    private readonly IUser _user;
 
     public AuditableEntityInterceptor(
         IUser user,
@@ -26,7 +26,8 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         return base.SavingChanges(eventData, result);
     }
 
-    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
+    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData,
+        InterceptionResult<int> result, CancellationToken cancellationToken = default)
     {
         UpdateEntities(eventData.Context);
 
@@ -35,21 +36,35 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
 
     public void UpdateEntities(DbContext? context)
     {
-        if (context == null) return;
+        if (context == null)
+        {
+            return;
+        }
 
         foreach (var entry in context.ChangeTracker.Entries<IBaseAuditableEntity>())
         {
-            if (entry.State is EntityState.Added or EntityState.Modified || entry.HasChangedOwnedEntities())
+            var utcNow = _dateTime.GetUtcNow();
+
+            if (entry.State == EntityState.Added)
             {
-                var utcNow = _dateTime.GetUtcNow();
-                if (entry.State == EntityState.Added)
+                entry.Entity.CreatedAt = utcNow;
+            }
+            else if (entry.State == EntityState.Modified)
+            {
+                entry.Entity.LastModifiedAt = utcNow;
+                var prop = entry.Property(e => e.DeleteFlag);
+                if (!prop.IsModified)
                 {
-                    entry.Entity.CreatedAt = utcNow;
+                    continue;
                 }
-                var deleteFlagProp = entry.Property(nameof(IBaseAuditableEntity.DeleteFlag));
-                if (deleteFlagProp.IsModified)
+
+                if (prop.OriginalValue == false && prop.CurrentValue)
                 {
                     entry.Entity.DeleteAt = utcNow;
+                }
+                else if (prop.OriginalValue && prop.CurrentValue == false)
+                {
+                    entry.Entity.DeleteAt = default;
                 }
             }
         }
@@ -58,9 +73,11 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
 
 public static class Extensions
 {
-    public static bool HasChangedOwnedEntities(this EntityEntry entry) =>
-        entry.References.Any(r =>
+    public static bool HasChangedOwnedEntities(this EntityEntry entry)
+    {
+        return entry.References.Any(r =>
             r.TargetEntry != null &&
             r.TargetEntry.Metadata.IsOwned() &&
             (r.TargetEntry.State == EntityState.Added || r.TargetEntry.State == EntityState.Modified));
+    }
 }
