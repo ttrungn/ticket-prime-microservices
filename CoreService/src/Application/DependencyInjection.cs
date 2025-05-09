@@ -1,8 +1,9 @@
 ﻿using System.Reflection;
 using CoreService.Application.Common.Behaviours;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace CoreService.Application;
 
 public static class DependencyInjection
 {

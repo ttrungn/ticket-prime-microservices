@@ -1,8 +1,10 @@
-﻿namespace CoreService.Application.Common.Models;
+﻿using CoreService.Domain.Entities;
+
+namespace CoreService.Application.Common.Models;
 
 public class LookupDto
 {
-    public int Id { get; init; }
+    public string Id { get; init; } = null!;
 
     public string? Title { get; init; }
 
@@ -10,6 +12,7 @@ public class LookupDto
     {
         public Mapping()
         {
+            
         }
     }
 }

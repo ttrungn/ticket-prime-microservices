@@ -1,3 +1,4 @@
+using CoreService.Application;
 using CoreService.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);

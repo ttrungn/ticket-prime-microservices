@@ -40,6 +40,6 @@ public class RegisterUserCommandHandler(IIdentityService identityService) : IReq
     {
         var (result, userId) = await identityService.CreateUserAsync(request.Email, request.Password, request.Role);
 
-        return !result.Succeeded ? result.Errors[0] : userId;
+        return !result.Succeeded ? result.Errors[0] : "";
     }
 }

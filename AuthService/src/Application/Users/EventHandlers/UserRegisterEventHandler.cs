@@ -1,5 +1,6 @@
 using AuthService.Application.Common.Interfaces;
 using AuthService.Domain.Events;
+using AuthService.Domain.Events.Users;
 using Microsoft.Extensions.Logging;
 
 namespace AuthService.Application.Users.EventHandlers;
@@ -15,7 +16,6 @@ public class UserRegisterEventHandler(
     {
         logger.LogInformation("Received user registration event for UserId: {UserId} and Email: {Email}",
             userRegisteredEvent.UserId, userRegisteredEvent.Email);
-        // await _massTransitService.Produce(userRegisteredEvent, cancellationToken);
-        await Task.CompletedTask;
+        await _massTransitService.Produce(userRegisteredEvent, cancellationToken);
     }
 }

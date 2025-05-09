@@ -2,7 +2,7 @@
 using Confluent.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using NotificationService.Application.Common.Interfaces;
-using NotificationService.Domain.SharedEvents;
+using NotificationService.Domain.Shared.Events.Users;
 using NotificationService.Infrastructure.Data;
 using NotificationService.Web.Consumers;
 using NotificationService.Web.Services;
@@ -38,18 +38,27 @@ public static class DependencyInjection
                 {
                     k.Host(builder.Configuration["KafkaSettings:Url"], h =>
                     {
-                        h.UseSasl(s =>
+                        if (
+                                builder.Configuration["KafkaSettings:Username"] != null &&
+                                builder.Configuration["KafkaSettings:Username"] != string.Empty &&
+                                builder.Configuration["KafkaSettings:Password"] != null &&
+                                builder.Configuration["KafkaSettings:Password"] != string.Empty
+                                )
                         {
-                            s.Mechanism = SaslMechanism.Plain;
-                            s.SecurityProtocol = SecurityProtocol.SaslSsl;
-                            s.Username = builder.Configuration["KafkaSettings:Username"];
-                            s.Password = builder.Configuration["KafkaSettings:Password"];
-                        });
+
+                            h.UseSasl(s =>
+                            {
+                                s.Mechanism = SaslMechanism.Plain;
+                                s.SecurityProtocol = SecurityProtocol.SaslSsl;
+                                s.Username = builder.Configuration["KafkaSettings:Username"];
+                                s.Password = builder.Configuration["KafkaSettings:Password"];
+                            });
+                        }
                     });
 
                     k.TopicEndpoint<UserRegisteredEvent>(
-                        builder.Configuration["KafkaSettings:UserRegisteredTopic:Name"],
-                        builder.Configuration["KafkaSettings:UserRegisteredTopic:Group"],
+                        builder.Configuration["KafkaSettings:UserEvents:Name"],
+                        builder.Configuration["KafkaSettings:UserEvents:Group"],
                         e =>
                         {
                             e.ConfigureConsumer<UserRegisteredEventConsumer>(context);

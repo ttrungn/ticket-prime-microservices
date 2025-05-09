@@ -18,7 +18,8 @@ public class CustomExceptionHandler : IExceptionHandler
                 { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
                 { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
                 { typeof(InvalidOperationException), HandleInvalidOperationException},
-                { typeof(ServiceUnavailableException), HandleServiceUnavailableException }
+                { typeof(ServiceUnavailableException), HandleServiceUnavailableException },
+                { typeof(Exception), HandleInternalServerError }
             };
     }
 
@@ -26,9 +27,12 @@ public class CustomExceptionHandler : IExceptionHandler
     {
         var exceptionType = exception.GetType();
 
-        if (_exceptionHandlers.ContainsKey(exceptionType))
+        var handler = _exceptionHandlers
+            .FirstOrDefault(h => h.Key.IsAssignableFrom(exceptionType)).Value;
+
+        if (handler is not null)
         {
-            await _exceptionHandlers[exceptionType].Invoke(httpContext, exception);
+            await handler.Invoke(httpContext, exception);
             return true;
         }
 
@@ -109,6 +113,17 @@ public class CustomExceptionHandler : IExceptionHandler
             Status = StatusCodes.Status503ServiceUnavailable,
             Title = "Service temporarily unavailable",
             Type = "https://tools.ietf.org/html/rfc7231#section-6.6.4",
+            Detail = ex.Message
+        });
+    }
+    
+    private async Task HandleInternalServerError(HttpContext httpContext, Exception ex)
+    {
+        httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
+        {
+            Status = StatusCodes.Status500InternalServerError,
+            Title = "An unexpected error occurred.",
             Detail = ex.Message
         });
     }

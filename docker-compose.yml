@@ -3,14 +3,9 @@ services:
     image: api-gateway:latest
     ports:
       - "9000:8080"
-    environment:
-      - ReverseProxy__Routes__authRoute__ClusterId=${ReverseProxy__Routes__authRoute__ClusterId}
-      - ReverseProxy__Routes__authRoute__Match__Path=${ReverseProxy__Routes__authRoute__Match__Path}
-      - ReverseProxy__Routes__authRoute__Transforms__0__PathRemovePrefix=${ReverseProxy__Routes__authRoute__Transforms__0__PathRemovePrefix}
-      - ReverseProxy__Clusters__authCluster__Destinations__authDest__Address=${ReverseProxy__Clusters__authCluster__Destinations__authDest__Address}
-      - ASPNETCORE_ENVIRONMENT=Production
     depends_on:
       - auth-service
+      - core-service
       - notification-service
     env_file:
       - .env
@@ -19,17 +14,15 @@ services:
     image: auth-service:latest
     expose:
       - "8080"
-    environment:
-      - ConnectionStrings__AuthServiceDb=${AUTHSERVICE_DB_CONNECTION}
-      - KafkaSettings__Url=${KAFKA_URL}
-      - KafkaSettings__Username=${CONFLUENT_KAFKA_API_KEY}
-      - KafkaSettings__Password=${CONFLUENT_KAFKA_API_SECRET}
-      - JwtSettings__Issuer=${JWT_ISSUER}
-      - JwtSettings__Audience=${JWT_AUDIENCE}
-      - JwtSettings__TokenLifetimeMinutes=${JWT_TOKEN_LIFETIME_MINUTES}
-      - ASPNETCORE_ENVIRONMENT=Production
+    env_file:
+      - .env
+
+  core-service:
+    image: core-service:latest
+    expose:
+      - "8080"
     depends_on:
-      - db
+      - auth-service
     env_file:
       - .env
 
@@ -37,13 +30,9 @@ services:
     image: notification-service:latest
     expose:
       - "8080"
-    environment:
-      - ConnectionStrings__NotificationServiceDb=${NOTIFSERVICE_DB_CONNECTION}
-      - KafkaSettings__Url=${KAFKA_URL}
-      - KafkaSettings__Username=${CONFLUENT_KAFKA_API_KEY}
-      - KafkaSettings__Password=${CONFLUENT_KAFKA_API_SECRET}
-      - ASPNETCORE_ENVIRONMENT=Production
     depends_on:
-      - db
+      - auth-service
     env_file:
       - .env
+
+

@@ -1,4 +1,4 @@
-namespace AuthService.Domain.Events
+namespace AuthService.Domain.Events.Users
 {
     public class UserRegisteredEvent : BaseEvent
     {

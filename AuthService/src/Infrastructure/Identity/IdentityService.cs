@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using AuthService.Application.Common.Exceptions;
 using AuthService.Application.Common.Interfaces;
 using AuthService.Application.Common.Models;
+using AuthService.Domain.Events.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +19,7 @@ public class IdentityService : IIdentityService
     private readonly RsaSecurityKey _signingKey;
     private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly string tokenType = "Bearer";
+    private readonly string _tokenType = "Bearer";
 
     public IdentityService(
         IConfiguration config,
@@ -46,6 +47,7 @@ public class IdentityService : IIdentityService
     public async Task<(Result Result, string UserId)> CreateUserAsync(string email, string password, string role)
     {
         var user = new ApplicationUser(email, email);
+        user.AddDomainEvent(new UserRegisteredEvent(user.Id, email));
 
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
@@ -87,7 +89,7 @@ public class IdentityService : IIdentityService
         var token = CreateToken(user.Id, user.Email!, roles);
         var expiresIn = _config.GetValue<int>("JwtSettings:TokenLifetimeMinutes") * 60;
 
-        return (Result.Success(), token, tokenType, expiresIn);
+        return (Result.Success(), token, _tokenType, expiresIn);
     }
 
     public async Task<(Result Result, string Token, string TokenType, int ExpiresIn)> LoginGoogleUserAsync(string email, string providerKey, string role)
@@ -141,7 +143,7 @@ public class IdentityService : IIdentityService
         var token = CreateToken(user.Id, user.Email!, roles);
         var expiresIn = _config.GetValue<int>("JwtSettings:TokenLifetimeMinutes") * 60;
 
-        return (Result.Success(), token, tokenType, expiresIn);
+        return (Result.Success(), token, _tokenType, expiresIn);
     }
 
     public async Task<bool> IsInRoleAsync(string userId, string role)

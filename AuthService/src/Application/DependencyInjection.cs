@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using AuthService.Application.Common.Behaviours;
-using AuthService.Domain.Events;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace AuthService.Application;
 
 public static class DependencyInjection
 {

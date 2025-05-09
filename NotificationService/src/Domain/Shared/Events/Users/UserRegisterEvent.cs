@@ -1,4 +1,4 @@
-namespace NotificationService.Domain.SharedEvents;
+namespace NotificationService.Domain.Shared.Events.Users;
 
 public class UserRegisteredEvent
 {

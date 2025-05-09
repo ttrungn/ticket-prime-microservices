@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using AuthService.Domain.Common;
 using AuthService.Domain.Events;
+using AuthService.Domain.Events.Users;
 using Microsoft.AspNetCore.Identity;
 
 namespace AuthService.Infrastructure.Identity;

@@ -1,5 +1,6 @@
 ﻿using AuthService.Application.Common.Interfaces;
 using AuthService.Domain.Events;
+using AuthService.Domain.Events.Users;
 using AuthService.Infrastructure.Data;
 using AuthService.Web.Services;
 using Azure.Identity;
@@ -32,7 +33,7 @@ public static class DependencyInjection
             x.AddRider(rider =>
             {
                 rider.AddProducer<UserRegisteredEvent>(
-                    builder.Configuration["KafkaSettings:UserRegisteredTopic:Name"],
+                    builder.Configuration["KafkaSettings:UserEvents:Name"],
                     (ctx, kc) =>
                     {
                         kc.MessageTimeout = TimeSpan.FromMilliseconds(
@@ -45,17 +46,26 @@ public static class DependencyInjection
 
                 rider.UsingKafka((context, k) =>
                 {
+                    var host = builder.Configuration["KafkaSettings:Url"];
                     k.Host(
-                        builder.Configuration["KafkaSettings:Url"],
+                        host,
                         h =>
                         {
-                            h.UseSasl(s =>
+                            if (
+                                builder.Configuration["KafkaSettings:Username"] != null &&
+                                builder.Configuration["KafkaSettings:Username"] != string.Empty &&
+                                builder.Configuration["KafkaSettings:Password"] != null &&
+                                builder.Configuration["KafkaSettings:Password"] != string.Empty
+                                )
                             {
-                                s.Mechanism = SaslMechanism.Plain;
-                                s.SecurityProtocol = SecurityProtocol.SaslSsl;
-                                s.Username = builder.Configuration["KafkaSettings:Username"];
-                                s.Password = builder.Configuration["KafkaSettings:Password"];
-                            });
+                                h.UseSasl(s =>
+                                {
+                                    s.Mechanism = SaslMechanism.Plain;
+                                    s.SecurityProtocol = SecurityProtocol.SaslSsl;
+                                    s.Username = builder.Configuration["KafkaSettings:Username"];
+                                    s.Password = builder.Configuration["KafkaSettings:Password"];
+                                });
+                            }
                         });
                 });
             });
@@ -96,3 +106,4 @@ public static class DependencyInjection
         }
     }
 }
+

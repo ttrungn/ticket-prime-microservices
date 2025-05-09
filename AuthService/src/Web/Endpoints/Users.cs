@@ -25,7 +25,7 @@ public class Users : EndpointGroupBase
         registerUserCommand.Role = Roles.Customer;
         var result = await sender.Send(registerUserCommand);
 
-        return result.Length == 0 ? Results.BadRequest(new { message = result }) : Results.Ok();
+        return result.Length > 0 ? Results.BadRequest(new { message = result }) : Results.Ok();
     }
 
     private static async Task<IResult> LoginCustomer(

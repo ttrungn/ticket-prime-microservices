@@ -1,4 +1,4 @@
-using NotificationService.Domain.SharedEvents;
+using NotificationService.Domain.Shared.Events.Users;
 
 namespace NotificationService.Web.Consumers
 {

@@ -6,6 +6,19 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/core/Categories": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "operationId": "GetCategories",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/core/Venues": {
       "post": {
         "tags": [
